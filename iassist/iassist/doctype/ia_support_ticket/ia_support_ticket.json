@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-13 10:25:09.125748",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_name",
+  "subject",
+  "posting_date",
+  "user_id",
+  "full_name",
+  "description",
+  "expected_start_date",
+  "expected_end_date",
+  "actual_start_date",
+  "actual_end_date",
+  "status",
+  "priority",
+  "issue_type",
+  "syncup_status",
+  "subscription_status",
+  "central_ticket_id",
+  "ia_support_ticket_attachments"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name"
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "options": "Email"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "expected_start_date",
+   "fieldtype": "Datetime",
+   "label": "Expected Start Date"
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Datetime",
+   "label": "Expected End Date"
+  },
+  {
+   "fieldname": "actual_start_date",
+   "fieldtype": "Datetime",
+   "label": "Actual Start Date"
+  },
+  {
+   "fieldname": "actual_end_date",
+   "fieldtype": "Data",
+   "label": "Actual End Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nOpen\nPicked\nResponded\nClosed"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "\nLow\nMedium\nHigh\nCritical"
+  },
+  {
+   "fieldname": "issue_type",
+   "fieldtype": "Select",
+   "label": "Issue Type",
+   "options": "\nBug\nTask\nStory\nEpic\nImprovement\nIncident\nService Request"
+  },
+  {
+   "fieldname": "syncup_status",
+   "fieldtype": "Select",
+   "label": "Syncup Status",
+   "options": "\nPending\nSynced\nFailed"
+  },
+  {
+   "fieldname": "subscription_status",
+   "fieldtype": "Data",
+   "label": "Subscription Status"
+  },
+  {
+   "fieldname": "central_ticket_id",
+   "fieldtype": "Data",
+   "label": "Central Ticket Id"
+  },
+  {
+   "fieldname": "ia_support_ticket_attachments",
+   "fieldtype": "Table",
+   "label": "iA Support Ticket Attachments",
+   "options": "iA Support Ticket Attachments"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-13 10:51:39.078833",
+ "modified_by": "Administrator",
+ "module": "IAssist",
+ "name": "iA Support Ticket",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
