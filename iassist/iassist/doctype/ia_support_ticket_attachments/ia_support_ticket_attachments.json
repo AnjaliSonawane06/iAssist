@@ -1,0 +1,38 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-13 10:46:56.950794",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "screenshot_attachment",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "screenshot_attachment",
+   "fieldtype": "Attach",
+   "label": "Screenshot Attachment"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-13 10:50:45.071350",
+ "modified_by": "Administrator",
+ "module": "IAssist",
+ "name": "iA Support Ticket Attachments",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
