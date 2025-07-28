@@ -433,9 +433,24 @@ def sync_to_central_support(doc, method):
             }
 
             payload = get_doc_payload(doctype, doc)
-            payload["synced_from_remote"] = 1
+            if doctype == "Issue":
+                payload["custom_iassist_issue_id"]= doc.name
+            elif doctype == "HD Ticket":
+                payload["custom_hd_ticket_id"] = doc.name
 
+            payload["synced_from_remote"] = 1
+            payload["project_name"] = config.project_name
+            payload["base_url"] = frappe.utils.get_url()
+            
             response = requests.post(create_url,json= payload, headers=headers)
+            response_data = response.json()  
+            doc.custom_last_sync = frappe.utils.get_datetime()
+            print(response_data)    
+            name = response_data['message']['data']['name']
+            if doctype == "Issue":
+                doc.custom_master_ic_id = name
+            elif doctype=="HD Ticket":
+                doc.custom_master_ic_id = name
 
             if response.status_code == 200:
                 return {"msg": "Issue synced successfully", "data": doc.name}
@@ -524,7 +539,7 @@ def sync_to_central_support_to_update(doc, method):
 
         base_url = config.central_support_url.rstrip("/")
         token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
-        doctype = doc.doctype
+        doctype = config.doctype
         endpoint_path = get_update_url(doctype)
         if not endpoint_path:
             frappe.logger().error(f"No endpoint defined for Doctype: {doctype}")
@@ -549,10 +564,9 @@ def sync_to_central_support_to_update(doc, method):
             }
 
             payload = get_doc_payload(doctype, doc)
-            payload["synced_from_remote"] = 1
-
+           
             response = requests.post(create_url,json= payload, headers=headers)
-
+            
             if response.status_code == 200:
                 return {"msg": "Issue synced successfully", "data": doc.name}
             else:
@@ -571,20 +585,6 @@ def get_update_url(doctype):
     elif doctype=="HD Ticket":
         url = "/api/method/icentral_support.icentral_support.api.hd_ticket.update_hd_ticket"
     return url
-
-
-@frappe.whitelist()
-def get_master_ic_id(data=None):
-    if not data:
-        data= frappe.request.data()
-        data= json.loads(data)
-    master_issue_id= data.get("master_ic_id")
-    frappe.db.set_value("Issue",{"name":data.get("issue_id")},'master_ic_id',master_issue_id)
-    return{
-        "status":200,
-        "msg":"Master IC Id updated successfully",
-        "data":{}
-    }
 
 
 @frappe.whitelist(allow_guest=True)
@@ -608,3 +608,4 @@ def generate_token(data=None):
         }
 
     return {"status": 401, "message": "Invalid login"}
+
