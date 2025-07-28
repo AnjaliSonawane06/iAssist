@@ -7,3 +7,8 @@ from frappe.model.document import Document
 
 class IAssistSupportConfigrations(Document):
 	pass
+
+def check_active_plan(doc,method):
+	if not doc:
+		return
+	

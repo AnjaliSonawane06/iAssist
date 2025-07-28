@@ -2,6 +2,8 @@ import frappe
 import json
 from frappe import _
 from frappe.model.meta import get_meta
+import requests
+from frappe.utils.password import get_decrypted_password
 
 
 @frappe.whitelist(allow_guest=False)
@@ -50,7 +52,7 @@ def create_hdticket(data=None):
     }
 
 
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist()
 def create_issue(data=None):
     if frappe.request.method != "POST":
         frappe.response["http_status_code"] = 405
@@ -350,6 +352,135 @@ def delete_issue(data=None):
                 "data": {}
             }
 
+@frappe.whitelist()
+def delete_hdticket(data=None):
+    if frappe.request.method != "DELETE":
+        frappe.response["http_status_code"] = 405
+        return {
+            "status_code": 405,
+            "msg": "Method Not Allowed. Please use POST.",
+            "data": {}
+        }
+
+    user = frappe.session.user
+
+    if not frappe.has_permission("HD Ticket", "delete", user=user):
+        raise frappe.PermissionError(_("You do not have permission to update this document."))
+
+    try:
+        if not data:
+            data = frappe.request.data
+            data = json.loads(data)
+    except Exception as e:
+        return {
+            "status_code": 400,
+            "msg": f"Invalid request data: {str(e)}",
+            "data": {}
+        }
+    if data.get("name"):
+        if frappe.db.exists("HD Ticket",{'name':data.get("name")}):
+            doc= frappe.get_doc("HD Ticket",data.get("name"))
+            doc.delete()
+            return {
+                "status_code": 200,
+                "msg": f"HD Ticket {data.get('name')} deleted successfully.",
+                "data": {}
+            }
+        else:
+            return {
+                "status_code": 404,
+                "msg": f"HD Ticket {data.get('name')} doc does not exist",
+                "data": {}
+            }
+        
+def map_valid_fields(doctype, data):
+    meta = get_meta(doctype)
+    valid_fieldnames = [df.fieldname for df in meta.fields] + ["name"]
+    return {key: value for key, value in data.items() if key in valid_fieldnames}
+
+
+def sync_to_central_support(doc, method):
+    try:
+        config = frappe.get_single("IAssist Support Configrations")
+
+        if not config.is_active or getattr(doc, "synced_from_remote", 0):
+            return
+
+        base_url = config.central_support_url.rstrip("/")
+        token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
+        doctype = doc.doctype
+        endpoint_path = get_create_url(doctype)
+        if not endpoint_path:
+            frappe.logger().error(f"No endpoint defined for Doctype: {doctype}")
+            return
+
+        create_url = f"{base_url}{endpoint_path}"
+        data_login = {"username": config.username, "password": config.get_password("password")}
+        auth_response = requests.post(token_url, json=data_login) 
+        
+        if auth_response.status_code == 200:
+            auth_data = auth_response.json()
+            api_key = auth_data["message"]["api_key"]
+            api_secret = auth_data["message"]["api_secret"]
+
+            if not api_key or not api_secret:
+                return
+
+            headers = {
+                "Authorization": f"token {api_key}:{api_secret}",
+                "Content-Type": "application/json",
+                "Expect": ""
+            }
+
+            payload = get_doc_payload(doctype, doc)
+            if doctype == "Issue":
+                payload["custom_iassist_issue_id"]= doc.name
+            elif doctype == "HD Ticket":
+                payload["custom_hd_ticket_id"] = doc.name
+
+            payload["synced_from_remote"] = 1
+            payload["project_name"] = config.project_name
+            payload["base_url"] = frappe.utils.get_url()
+            
+            response = requests.post(create_url,json= payload, headers=headers)
+            response_data = response.json()  
+            doc.custom_last_sync = frappe.utils.get_datetime()
+            print(response_data)    
+            name = response_data['message']['data']['name']
+            if doctype == "Issue":
+                doc.custom_master_ic_id = name
+            elif doctype=="HD Ticket":
+                doc.custom_master_ic_id = name
+
+            if response.status_code == 200:
+                return {"msg": "Issue synced successfully", "data": doc.name}
+            else:
+                frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
+
+    except Exception:
+        frappe.logger().error(f"Error during sync to central: {frappe.get_traceback()}")
+
+
+def get_doc_payload(doctype, doc):
+    meta = get_meta(doctype)
+    valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
+
+    doc_dict = doc if isinstance(doc, dict) else doc.as_dict()
+
+    return {key: value for key, value in doc_dict.items() if key in valid_fieldnames}
+
+
+def get_create_url(doctype):
+    if not doctype:
+        return
+    url=""
+    if doctype=="Issue":
+        url = "/api/method/icentral_support.icentral_support.api.issue.create_issue"
+    elif doctype=="HD Ticket":
+        url = "/api/method/icentral_support.icentral_support.api.hd_ticket.create_hd_ticket"
+    return url
+
+
 
 
 @frappe.whitelist()
@@ -397,4 +528,84 @@ def map_valid_fields(doctype, data):
     meta = get_meta(doctype)
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name"]
     return {key: value for key, value in data.items() if key in valid_fieldnames}
+
+
+def sync_to_central_support_to_update(doc, method):
+    try:
+        config = frappe.get_single("IAssist Support Configrations")
+
+        if not config.is_active or getattr(doc, "synced_from_remote", 0):
+            return
+
+        base_url = config.central_support_url.rstrip("/")
+        token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
+        doctype = config.doctype
+        endpoint_path = get_update_url(doctype)
+        if not endpoint_path:
+            frappe.logger().error(f"No endpoint defined for Doctype: {doctype}")
+            return
+
+        create_url = f"{base_url}{endpoint_path}"
+        data_login = {"username": config.username, "password": config.get_password("password")}
+        auth_response = requests.post(token_url, json=data_login) 
+        
+        if auth_response.status_code == 200:
+            auth_data = auth_response.json()
+            api_key = auth_data["message"]["api_key"]
+            api_secret = auth_data["message"]["api_secret"]
+
+            if not api_key or not api_secret:
+                return
+
+            headers = {
+                "Authorization": f"token {api_key}:{api_secret}",
+                "Content-Type": "application/json",
+                "Expect": ""
+            }
+
+            payload = get_doc_payload(doctype, doc)
+           
+            response = requests.post(create_url,json= payload, headers=headers)
+            
+            if response.status_code == 200:
+                return {"msg": "Issue synced successfully", "data": doc.name}
+            else:
+                frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
+
+    except Exception:
+        frappe.logger().error(f"Error during sync to central: {frappe.get_traceback()}")
+
+
+def get_update_url(doctype):
+    if not doctype:
+        return
+    url=""
+    if doctype=="Issue":
+        url = "/api/method/icentral_support.icentral_support.api.issue.update_issue"
+    elif doctype=="HD Ticket":
+        url = "/api/method/icentral_support.icentral_support.api.hd_ticket.update_hd_ticket"
+    return url
+
+
+@frappe.whitelist(allow_guest=True)
+def generate_token(data=None):
+    data = frappe.request.get_json()
+
+    username = data.get("username")
+    password = data.get("password")
+    login_url = f"{frappe.utils.get_url()}/api/method/login"
+    response = requests.post(login_url, data={"usr": username, "pwd": password})
+    if response.status_code == 200:
+        user_doc = frappe.get_doc("User", username)
+        user_doc.api_key = frappe.generate_hash(length=15)
+        user_doc.api_secret = frappe.generate_hash(length=15)
+        user_doc.save(ignore_permissions=True)
+        
+        return {
+        "status": 200,
+        "api_key": user_doc.api_key,
+        "api_secret": user_doc.get_password("api_secret")
+        }
+
+    return {"status": 401, "message": "Invalid login"}
 

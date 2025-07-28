@@ -10,7 +10,10 @@
   "central_support_url",
   "deployed_on",
   "username",
-  "password"
+  "password",
+  "doctype_for_raising_ticket",
+  "api_secret",
+  "api_key"
  ],
  "fields": [
   {
@@ -38,19 +41,36 @@
   {
    "fieldname": "username",
    "fieldtype": "Data",
-   "label": "Username"
+   "label": "Username",
+   "options": "Email"
+  },
+  {
+   "fieldname": "doctype_for_raising_ticket",
+   "fieldtype": "Link",
+   "label": "Doctype for raising ticket",
+   "options": "DocType"
   },
   {
    "fieldname": "password",
-   "fieldtype": "Password",
+   "fieldtype": "Data",
    "label": "Password"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "label": "api secret"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "api key"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-13 10:55:26.442214",
+ "modified": "2025-07-23 13:16:45.390792",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IAssist Support Configrations",

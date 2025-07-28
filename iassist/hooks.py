@@ -137,13 +137,20 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+   
+    "Issue": {
+        "validate": "iassist.iassist.api.sync_to_central_support"
+    },
+    "HD Ticket": {
+        "validate": "iassist.iassist.api.sync_to_central_support"
+    }
+	# "*": {
+	# 	"on_update": "method",
+	# 	"on_cancel": "method",
+	# 	"on_trash": "method"
+	# }
+}
 
 # Scheduled Tasks
 # ---------------
