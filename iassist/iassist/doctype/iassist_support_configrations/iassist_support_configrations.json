@@ -51,7 +51,7 @@
   },
   {
    "fieldname": "password",
-   "fieldtype": "Data",
+   "fieldtype": "Password",
    "label": "Password"
   }
  ],
@@ -59,7 +59,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-28 17:46:03.227688",
+ "modified": "2025-07-28 17:51:10.524540",
  "modified_by": "anjali@example.com",
  "module": "IAssist",
  "name": "IAssist Support Configrations",
