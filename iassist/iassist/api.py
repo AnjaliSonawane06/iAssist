@@ -439,8 +439,7 @@ def sync_to_central_support(doc, method):
                 payload["custom_hd_ticket_id"] = doc.name
 
             payload["synced_from_remote"] = 1
-            payload["project_name"] = config.project_name
-            payload["base_url"] = frappe.utils.get_url()
+            payload["custom_url"] = frappe.utils.get_url()
             
             response = requests.post(create_url,json= payload, headers=headers)
             response_data = response.json()  
