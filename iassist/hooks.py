@@ -140,10 +140,12 @@ app_license = "mit"
 doc_events = {
    
     "Issue": {
-        "validate": "iassist.iassist.api.sync_to_central_support"
+        "on_update": "iassist.iassist.api.update.sync_to_central_support_to_update",
+        "before_save": "iassist.iassist.api.create.sync_to_central_support",
     },
     "HD Ticket": {
-        "validate": "iassist.iassist.api.sync_to_central_support"
+        "before_save": "iassist.iassist.api.create.sync_to_central_support",
+        "on_update": "iassist.iassist.api.update.sync_to_central_support_to_update"
     }
 	# "*": {
 	# 	"on_update": "method",
@@ -155,13 +157,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"iassist.tasks.all"
 # 	],
-# 	"daily": [
-# 		"iassist.tasks.daily"
-# 	],
+	"daily": [
+		"iassist.iassist.api.api.set_token_daily"
+	],
 # 	"hourly": [
 # 		"iassist.tasks.hourly"
 # 	],
@@ -171,7 +173,7 @@ doc_events = {
 # 	"monthly": [
 # 		"iassist.tasks.monthly"
 # 	],
-# }
+}
 
 # Testing
 # -------
