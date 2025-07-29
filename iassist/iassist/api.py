@@ -401,7 +401,7 @@ def map_valid_fields(doctype, data):
 
 def sync_to_central_support(doc, method):
     try:
-        config = frappe.get_single("IAssist Support Configrations")
+        config = frappe.get_single("IAssist Support Configurations")
 
         if not config.is_active or getattr(doc, "synced_from_remote", 0):
             return
@@ -531,7 +531,7 @@ def map_valid_fields(doctype, data):
 
 def sync_to_central_support_to_update(doc, method):
     try:
-        config = frappe.get_single("IAssist Support Configrations")
+        config = frappe.get_single("IAssist Support Configurations")
 
         if not config.is_active or getattr(doc, "synced_from_remote", 0):
             return
