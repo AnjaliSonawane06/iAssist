@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class IAssistSupportConfigrations(Document):
+class IAssistSupportConfigurations(Document):
 	pass
 
 def check_active_plan(doc,method):

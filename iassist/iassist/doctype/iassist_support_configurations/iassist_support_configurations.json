@@ -59,10 +59,10 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-28 17:51:10.524540",
- "modified_by": "anjali@example.com",
+ "modified": "2025-07-29 10:37:08.248931",
+ "modified_by": "Administrator",
  "module": "IAssist",
- "name": "IAssist Support Configrations",
+ "name": "IAssist Support Configurations",
  "owner": "Administrator",
  "permissions": [
   {

@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestIAssistSupportConfigrations(FrappeTestCase):
+class TestIAssistSupportConfigurations(FrappeTestCase):
 	pass
