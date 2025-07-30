@@ -14,7 +14,7 @@ def delete_issue(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
@@ -30,7 +30,7 @@ def delete_issue(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
     if data.get("name"):
@@ -39,13 +39,13 @@ def delete_issue(data=None):
             doc.delete()
             return {
                 "status_code": 200,
-                "msg": f"Issue {data.get('name')} deleted successfully.",
+                "message": f"Issue {data.get('name')} deleted successfully.",
                 "data": {}
             }
         else:
             return {
                 "status_code": 404,
-                "msg": f"Issue {data.get('name')} doc does not exist",
+                "message": f"Issue {data.get('name')} doc does not exist",
                 "data": {}
             }
 
@@ -55,7 +55,7 @@ def delete_hdticket(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
@@ -71,7 +71,7 @@ def delete_hdticket(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
     if data.get("name"):
@@ -80,13 +80,13 @@ def delete_hdticket(data=None):
             doc.delete()
             return {
                 "status_code": 200,
-                "msg": f"HD Ticket {data.get('name')} deleted successfully.",
+                "message": f"HD Ticket {data.get('name')} deleted successfully.",
                 "data": {}
             }
         else:
             return {
                 "status_code": 404,
-                "msg": f"HD Ticket {data.get('name')} doc does not exist",
+                "message": f"HD Ticket {data.get('name')} doc does not exist",
                 "data": {}
             }
         

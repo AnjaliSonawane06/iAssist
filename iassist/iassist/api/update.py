@@ -13,7 +13,7 @@ def update_hdticket(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
@@ -29,7 +29,7 @@ def update_hdticket(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
 
@@ -39,14 +39,14 @@ def update_hdticket(data=None):
     if not docname:
         return {
             "status_code": 400,
-            "msg": "Missing required field: 'name'",
+            "message": "Missing required field: 'name'",
             "data": {}
         }
 
     if not frappe.db.exists("HD Ticket", docname):
         return {
             "status_code": 404,
-            "msg": f"HD Ticket {docname} does not exist.",
+            "message": f"HD Ticket {docname} does not exist.",
             "data": {}
         }
 
@@ -59,14 +59,14 @@ def update_hdticket(data=None):
 
         return {
             "status_code": 200,
-            "msg": f"HD Ticket {docname} updated successfully.",
+            "message": f"HD Ticket {docname} updated successfully.",
             "data": doc.as_dict()
         }
 
     except Exception as e:
         return {
             "status_code": 500,
-            "msg": f"Error updating document: {str(e)}",
+            "message": f"Error updating document: {str(e)}",
             "data": {}
         }
 
@@ -77,7 +77,7 @@ def update_issue(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
@@ -93,7 +93,7 @@ def update_issue(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
 
@@ -103,14 +103,14 @@ def update_issue(data=None):
     if not docname:
         return {
             "status_code": 400,
-            "msg": "Missing required field: 'name'",
+            "message": "Missing required field: 'name'",
             "data": {}
         }
 
     if not frappe.db.exists("Issue", docname):
         return {
             "status_code": 404,
-            "msg": f"Issue {docname} does not exist.",
+            "message": f"Issue {docname} does not exist.",
             "data": {}
         }
 
@@ -123,14 +123,14 @@ def update_issue(data=None):
 
         return {
             "status_code": 200,
-            "msg": f"Issue {docname} updated successfully.",
+            "message": f"Issue {docname} updated successfully.",
             "data": doc.as_dict()
         }
 
     except Exception as e:
         return {
             "status_code": 500,
-            "msg": f"Error updating document: {str(e)}",
+            "message": f"Error updating document: {str(e)}",
             "data": {}
         }
 

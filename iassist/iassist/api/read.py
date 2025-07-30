@@ -13,7 +13,7 @@ def get_issue(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use GET.",
+            "message": "Method Not Allowed. Please use GET.",
             "data": {}
         }
 
@@ -29,7 +29,7 @@ def get_issue(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
 
@@ -41,13 +41,13 @@ def get_issue(data=None):
     if not records:
         return {
             "status_code": 200,
-            "msg": "No records found.",
+            "message": "No records found.",
             "data": []
         }
 
     return {
         "status_code": 200,
-        "msg": "Data received successfully.",
+        "message": "Data received successfully.",
         "data": records
     }
 
@@ -57,7 +57,7 @@ def get_hdticket(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use GET.",
+            "message": "Method Not Allowed. Please use GET.",
             "data": {}
         }
 
@@ -73,7 +73,7 @@ def get_hdticket(data=None):
     except Exception as e:
         return {
             "status_code": 400,
-            "msg": f"Invalid request data: {str(e)}",
+            "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
 
@@ -85,12 +85,12 @@ def get_hdticket(data=None):
     if not records:
         return {
             "status_code": 200,
-            "msg": "No records found.",
+            "message": "No records found.",
             "data": []
         }
 
     return {
         "status_code": 200,
-        "msg": "Data received successfully.",
+        "message": "Data received successfully.",
         "data": records
     }

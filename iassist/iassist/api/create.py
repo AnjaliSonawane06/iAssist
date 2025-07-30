@@ -10,7 +10,7 @@ def create_hdticket(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
@@ -57,7 +57,7 @@ def create_issue(data=None):
         frappe.response["http_status_code"] = 405
         return {
             "status_code": 405,
-            "msg": "Method Not Allowed. Please use POST.",
+            "message": "Method Not Allowed. Please use POST.",
             "data": {}
         }
 
