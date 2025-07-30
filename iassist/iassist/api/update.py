@@ -20,7 +20,7 @@ def update_hdticket(data=None):
     user = frappe.session.user
 
     if not frappe.has_permission("HD Ticket", "write", user=user):
-        raise frappe.PermissionError(_("You do not have permission to update this document."))
+        return{"message":"You do not have permission to update this document."}
 
     try:
         if not data:
@@ -84,7 +84,7 @@ def update_issue(data=None):
     user = frappe.session.user
 
     if not frappe.has_permission("Issue", "write", user=user):
-        raise frappe.PermissionError(_("You do not have permission to update this document."))
+        return{"message":"You do not have permission to update this document."}
 
     try:
         if not data:

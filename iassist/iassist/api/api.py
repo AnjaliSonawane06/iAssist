@@ -147,7 +147,7 @@ def sync_to_central_support_to_create(doc, method):
         if response.status_code == 200:
             name = response_data['message']['data']['name']
             doc.custom_master_ic_id = name
-            return {"msg": "Issue synced successfully", "data": doc.name}
+            return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
@@ -178,7 +178,7 @@ def sync_to_central_support_to_update(doc, method):
 
         if response.status_code == 200:
             doc.custom_last_sync = frappe.utils.now()
-            return {"msg": "Issue synced successfully", "data": doc.name}
+            return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 

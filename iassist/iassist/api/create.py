@@ -20,19 +20,20 @@ def create_hdticket(data=None):
             data = json.loads(data)
 
     except Exception:
-        raise frappe.ValidationError("Invalid JSON data provided.")
+        return{"message": "Invalid JSON data provided."}
 
     if not isinstance(data, dict):
-        raise frappe.ValidationError("Invalid input format. Expected JSON object.")
+        return{"message": "Invalid input format. Expected JSON object."}
 
     user = frappe.session.user
     if not frappe.has_permission("HD Ticket", "create", user=user):
-        raise frappe.PermissionError("You do not have permission to create an Issue.")
+        return{"message":"You do not have permission to create an Issue."}
+    
     attachments = data.pop("attachments", [])
     required_fields = ["subject"]
     missing = [f for f in required_fields if f not in data]
     if missing:
-        raise frappe.ValidationError(f"Missing required fields: {', '.join(missing)}")
+        return{"message":f"Missing required fields: {', '.join(missing)}"}
 
     valid_data = map_valid_fields("HD Ticket", data)
 
@@ -65,20 +66,20 @@ def create_issue(data=None):
             data = frappe.request.data
             data = json.loads(data)
     except Exception:
-        raise frappe.ValidationError("Invalid JSON data provided.")
+        return{"message": "Invalid JSON data provided."}
 
     if not isinstance(data, dict):
-        raise frappe.ValidationError("Invalid input format. Expected JSON object.")
+        return{"message": "Invalid input format. Expected JSON object."}
 
     user = frappe.session.user
     if not frappe.has_permission("Issue", "create", user=user):
-        raise frappe.PermissionError("You do not have permission to create an Issue.")
+        return{"message":"You do not have permission to create an Issue."}
     
     attachments = data.pop("attachments", [])
     required_fields = ["subject"]
     missing = [f for f in required_fields if f not in data]
     if missing:
-        raise frappe.ValidationError(f"Missing required fields: {', '.join(missing)}")
+        return{"message":f"Missing required fields: {', '.join(missing)}"}
 
     valid_data = map_valid_fields("Issue", data)
 
