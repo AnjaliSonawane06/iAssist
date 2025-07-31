@@ -143,7 +143,7 @@ doc_events = {
         "before_save": "iassist.iassist.api.api.sync_to_central_support",
     },
     "HD Ticket": {
-        "before_save": "iassist.iassist.api.api.create.sync_to_central_support",
+        "before_save": "iassist.iassist.api.api.sync_to_central_support",
     }
 	# "*": {
 	# 	"on_update": "method",
