@@ -140,10 +140,10 @@ app_license = "mit"
 doc_events = {
    
     "Issue": {
-        "before_save": "iassist.iassist.api.api.sync_to_central_support",
+        "before_save": "iassist.iassist.api.api.before_save",
     },
     "HD Ticket": {
-        "before_save": "iassist.iassist.api.api.sync_to_central_support",
+        "before_save": "iassist.iassist.api.api.before_save",
     }
 	# "*": {
 	# 	"on_update": "method",

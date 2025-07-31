@@ -118,7 +118,7 @@ def get_updated_payload(doc):
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
    
-def sync_to_central_support(doc, method):
+def before_save(doc, method):
     if doc.is_new():
         sync_to_central_support_to_create(doc, method)
     else:
