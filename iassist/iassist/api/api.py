@@ -5,7 +5,8 @@ from frappe.model.meta import get_meta
 import requests
 import base64
 from frappe.utils.file_manager import save_file
-
+import datetime
+import uuid
 
         
 def map_valid_fields(doctype, data):
@@ -13,15 +14,24 @@ def map_valid_fields(doctype, data):
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name"]
     return {key: value for key, value in data.items() if key in valid_fieldnames}
 
-
 def get_doc_payload(doctype, doc):
     meta = get_meta(doctype)
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
 
     doc_dict = doc if isinstance(doc, dict) else doc.as_dict()
 
-    return {key: value for key, value in doc_dict.items() if key in valid_fieldnames}
+    return {
+        key: safe_json_value(value)
+        for key, value in doc_dict.items()
+        if key in valid_fieldnames
+    }
 
+def safe_json_value(value):
+    if isinstance(value, (datetime.datetime, datetime.date)):
+        return value.isoformat()
+    if isinstance(value, uuid.UUID):
+        return str(value)
+    return value
 
 def get_create_url(doctype):
     if not doctype:
@@ -32,7 +42,6 @@ def get_create_url(doctype):
     elif doctype=="HD Ticket":
         url = "/api/method/icentral_support.icentral_support.api.hd_ticket.create_hd_ticket"
     return url
-
 
 
 def get_update_url(doctype):
@@ -56,7 +65,8 @@ def generate_token(data=None):
     response = requests.post(login_url, data={"usr": username, "pwd": password})
     if response.status_code == 200:
         user_doc = frappe.get_doc("User", username)
-        user_doc.api_key = frappe.generate_hash(length=15)
+        if not user_doc.api_key:
+            user_doc.api_key = frappe.generate_hash(length=15)
         user_doc.api_secret = frappe.generate_hash(length=15)
         user_doc.save(ignore_permissions=True)
         
@@ -95,18 +105,20 @@ def get_updated_payload(doc):
             old_val = old_doc.get(fieldname)
             new_val = doc.get(fieldname)
             if old_val != new_val:
-                updated_payload[fieldname]  = new_val
+                updated_payload[fieldname]  = safe_json_value(new_val)
 
     if not updated_payload:
         frappe.logger().info(f"No changes detected in {doc.doctype} {doc.name}, skipping sync.")
         return
     updated_payload["name"] = doc.name
-    updated_payload["custom_master_ic_id"] = doc.custom_master_ic_id
+    if doc.doctype == "Issue":
+        updated_payload["name"] = doc.custom_master_ic_id
+    elif doc.doctype == "HD Ticket":
+        updated_payload["name"] = doc.custom_master_ticket_id
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
-
    
-def sync_to_central_support(doc, method):
+def before_save(doc, method):
     if doc.is_new():
         sync_to_central_support_to_create(doc, method)
     else:
@@ -134,7 +146,7 @@ def sync_to_central_support_to_create(doc, method):
         if doctype == "Issue":
             payload["custom_iassist_issue_id"] = doc.name
         elif doctype == "HD Ticket":
-            payload["custom_hd_ticket_id"] = doc.name
+            payload["custom_iassist_hd_ticket"] = doc.name
 
         payload["synced_from_remote"] = 1
         payload["custom_url"] = frappe.utils.get_url()
@@ -146,7 +158,11 @@ def sync_to_central_support_to_create(doc, method):
 
         if response.status_code == 200:
             name = response_data['message']['data']['name']
-            doc.custom_master_ic_id = name
+            if doctype == "Issue":
+                doc.custom_master_ic_id = name
+            elif doctype == "HD Ticket":
+                doc.custom_master_ticket_id = name
+
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
@@ -175,7 +191,6 @@ def sync_to_central_support_to_update(doc, method):
             payload["attachments"] = attachments
 
         response = requests.post(update_url, json=payload, headers=headers)
-
         if response.status_code == 200:
             doc.custom_last_sync = frappe.utils.now()
             return {"message": "Issue synced successfully", "data": doc.name}
