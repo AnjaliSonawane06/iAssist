@@ -17,13 +17,14 @@ def map_valid_fields(doctype, data):
 def get_doc_payload(doctype, doc):
     meta = get_meta(doctype)
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
+    if doctype == "Issue":
+        valid_fieldnames.remove('company')
+        valid_fieldnames.remove('contact')
 
     doc_dict = doc if isinstance(doc, dict) else doc.as_dict()
 
     return {
-        key: safe_json_value(value)
-        for key, value in doc_dict.items()
-        if key in valid_fieldnames
+        key: safe_json_value(value) for key, value in doc_dict.items() if key in valid_fieldnames
     }
 
 def safe_json_value(value):
@@ -97,26 +98,34 @@ def set_token_daily():
 
 def get_updated_payload(doc):
     old_doc = frappe.get_doc(doc.doctype, doc.name)
-
     updated_payload = {}
+
+    exclude_fields = {"contact", "company"}  
+
     for field in doc.meta.fields:
         fieldname = field.fieldname
         if fieldname and hasattr(doc, fieldname):
+            if doc.doctype == "Issue" and fieldname in exclude_fields:
+                continue  
             old_val = old_doc.get(fieldname)
             new_val = doc.get(fieldname)
             if old_val != new_val:
-                updated_payload[fieldname]  = safe_json_value(new_val)
+                updated_payload[fieldname] = safe_json_value(new_val)
 
     if not updated_payload:
         frappe.logger().info(f"No changes detected in {doc.doctype} {doc.name}, skipping sync.")
         return
-    updated_payload["name"] = doc.name
+
     if doc.doctype == "Issue":
         updated_payload["name"] = doc.custom_master_ic_id
     elif doc.doctype == "HD Ticket":
         updated_payload["name"] = doc.custom_master_ticket_id
+    else:
+        updated_payload["name"] = doc.name
+
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
+
    
 def before_save(doc, method):
     if doc.is_new():
@@ -157,6 +166,7 @@ def sync_to_central_support_to_create(doc, method):
         doc.custom_last_sync = frappe.utils.now()
 
         if response.status_code == 200:
+            doc.custom_sync_status = "Synced"
             name = response_data['message']['data']['name']
             if doctype == "Issue":
                 doc.custom_master_ic_id = name
@@ -192,6 +202,7 @@ def sync_to_central_support_to_update(doc, method):
 
         response = requests.post(update_url, json=payload, headers=headers)
         if response.status_code == 200:
+            doc.custom_sync_status = "Synced"
             doc.custom_last_sync = frappe.utils.now()
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
@@ -260,3 +271,23 @@ def save_attachments_for_doc(doc, attachments):
             )
         except Exception as e:
             frappe.logger().error(f"Failed to save attachment {file_name}: {e}")
+
+def check_Sync_status_for_issue():
+    record_list = frappe.get_all("Issue",['name'])
+    for record in record_list:
+        if not record.custom_sync_status == "Synced":
+            doc = frappe.get_doc("Issue",record.name)
+            if not record.custom_master_ic_id:
+                sync_to_central_support_to_create(doc,method=None)
+            else:
+                sync_to_central_support_to_update(doc,method=None)
+
+def check_Sync_status_for_hd_ticket():
+    record_list = frappe.get_all("HD Ticket",['name'])
+    for record in record_list:
+        if not record.custom_sync_status == "Synced":
+            doc = frappe.get_doc("HD Ticket",record.name)
+            if not record.custom_master_ticket_id:
+                sync_to_central_support_to_create(doc,method=None)
+            else:
+                sync_to_central_support_to_update(doc,method=None)
