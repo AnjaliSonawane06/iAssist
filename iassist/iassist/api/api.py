@@ -19,7 +19,7 @@ def get_doc_payload(doctype, doc):
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
     if doctype == "Issue":
         valid_fieldnames.remove('company')
-        valid_fieldnames.remove('contact')
+    valid_fieldnames.remove('contact')
 
     doc_dict = doc if isinstance(doc, dict) else doc.as_dict()
 
@@ -105,7 +105,7 @@ def get_updated_payload(doc):
     for field in doc.meta.fields:
         fieldname = field.fieldname
         if fieldname and hasattr(doc, fieldname):
-            if doc.doctype == "Issue" and fieldname in exclude_fields:
+            if fieldname in exclude_fields:
                 continue  
             old_val = old_doc.get(fieldname)
             new_val = doc.get(fieldname)
