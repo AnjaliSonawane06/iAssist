@@ -140,7 +140,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nOpen\nPicked\nResponded\nClosed"
+   "options": "Open\nPicked\nResponded\nClosed"
   },
   {
    "fieldname": "custom_sync_status",
@@ -152,7 +152,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-02 12:45:32.390947",
+ "modified": "2025-08-04 15:22:30.951486",
  "modified_by": "anjali@example.com",
  "module": "IAssist",
  "name": "iA Support Ticket",

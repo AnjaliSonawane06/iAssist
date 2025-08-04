@@ -16,15 +16,18 @@ def map_valid_fields(doctype, data):
 def get_doc_payload(doctype, doc):
     meta = get_meta(doctype)
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
-    if doctype == "Issue":
-        valid_fieldnames.remove('company')
-    valid_fieldnames.remove('contact')
+    
+    exclude_fields = {"contact", "company"}  
+    valid_fieldnames = [field for field in valid_fieldnames if field not in exclude_fields]
 
     doc_dict = doc if isinstance(doc, dict) else doc.as_dict()
 
     return {
-        key: safe_json_value(value) for key, value in doc_dict.items() if key in valid_fieldnames
+        key: safe_json_value(value)
+        for key, value in doc_dict.items()
+        if key in valid_fieldnames
     }
+
 
 def safe_json_value(value):
     if isinstance(value, (datetime.datetime, datetime.date)):
@@ -122,7 +125,7 @@ def get_updated_payload(doc):
     elif doc.doctype == "HD Ticket":
         updated_payload["name"] = doc.custom_master_ticket_id
     else:
-        updated_payload["name"] = doc.name
+        updated_payload["name"] = doc.central_ticket_id
     updated_payload["custom_referred_doctype"] = doc.custom_referred_doctype
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
@@ -180,6 +183,7 @@ def sync_to_central_support_to_create(doc, method):
 
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
+            doc.custom_sync_status = "Not Synced"
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
     except Exception:
@@ -213,6 +217,7 @@ def sync_to_central_support_to_update(doc, method):
             doc.custom_last_sync = frappe.utils.now()
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
+            doc.custom_sync_status = "Not Synced"
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
     except Exception:
