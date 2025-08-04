@@ -6,7 +6,6 @@ import requests
 from frappe.utils.password import get_decrypted_password
 from iassist.iassist.api.api import *
 
-
 @frappe.whitelist()
 def update_ticket(data=None):
     if frappe.request.method != "POST":
@@ -19,7 +18,7 @@ def update_ticket(data=None):
 
     user = frappe.session.user
 
-    if not frappe.has_permission(data.get("custom_referred_doctype"), "write", user=user):
+    if not frappe.has_permission("HD Ticket", "write", user=user):
         return{"message":"You do not have permission to update this document."}
 
     try:
@@ -33,7 +32,9 @@ def update_ticket(data=None):
             "data": {}
         }
 
-    valid_fields = map_valid_fields(data.get("custom_referred_doctype"), data)
+    
+    refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
+    valid_fields = map_valid_fields(refer_doctype, data)
     docname = valid_fields.get("name")
 
     if not docname:
@@ -43,15 +44,22 @@ def update_ticket(data=None):
             "data": {}
         }
 
-    if not frappe.db.exists(data.get("custom_referred_doctype"), docname):
+    if not frappe.db.exists(refer_doctype, docname):
         return {
             "status_code": 404,
-            "message": f"HD Ticket {docname} does not exist.",
+            "message": f"{refer_doctype} {docname} does not exist.",
             "data": {}
         }
 
     try:
-        doc = frappe.get_doc(data.get("custom_referred_doctype"), docname)
+        doc = frappe.get_doc(refer_doctype, docname)
+        if refer_doctype == "Issue":
+            valid_fields['custom_master_ic_id'] = docname
+        elif refer_doctype == "iA Support Ticket":
+            valid_fields['central_ticket_id'] = docname
+        elif refer_doctype == "HD Ticket":
+            valid_fields['custom_master_ticket_id'] = docname
+        
         for key, value in valid_fields.items():
             if key != "name":
                 setattr(doc, key, value)
@@ -59,7 +67,7 @@ def update_ticket(data=None):
 
         return {
             "status_code": 200,
-            "message": f"{data.get("custom_referred_doctype ")} {docname} updated successfully.",
+            "message": f"{refer_doctype} {docname} updated successfully.",
             "data": doc.as_dict()
         }
 
@@ -69,7 +77,6 @@ def update_ticket(data=None):
             "message": f"Error updating document: {str(e)}",
             "data": {}
         }
-
 
 # @frappe.whitelist()
 # def update_issue(data=None):

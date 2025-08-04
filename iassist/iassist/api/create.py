@@ -38,6 +38,14 @@ def create_ticket(data=None):
     valid_data = map_valid_fields(refer_doctype, data)
 
     doc = frappe.new_doc(refer_doctype)
+    if refer_doctype == "Issue":
+        valid_data['custom_master_ic_id'] = data.get("name")
+    elif refer_doctype == "iA Support Ticket":
+        valid_data['central_ticket_id'] = data.get("name")
+    elif refer_doctype == "HD Ticket":
+        valid_data['custom_master_ticket_id'] = data.get("name")
+    valid_data['custom_referred_doctype'] = data.get("doctype")
+    
     for key, value in valid_data.items():
         if key!= 'name':
             setattr(doc, key, value)
@@ -49,8 +57,6 @@ def create_ticket(data=None):
         "message": f"{refer_doctype} created successfully",
         "data": {"name": doc.name}
     }
-
-
 # @frappe.whitelist()
 # def create_issue(data=None):
 #     if frappe.request.method != "POST":
