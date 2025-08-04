@@ -32,7 +32,9 @@
   {
    "fieldname": "central_support_url",
    "fieldtype": "Data",
-   "label": "Central Support URL"
+   "in_list_view": 1,
+   "label": "Central Support URL",
+   "reqd": 1
   },
   {
    "fieldname": "deployed_on",
@@ -43,8 +45,10 @@
   {
    "fieldname": "username",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Username",
-   "options": "Email"
+   "options": "Email",
+   "reqd": 1
   },
   {
    "fieldname": "doctype_for_raising_ticket",
@@ -55,7 +59,9 @@
   {
    "fieldname": "password",
    "fieldtype": "Password",
-   "label": "Password"
+   "in_list_view": 1,
+   "label": "Password",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_r0t8",
@@ -64,21 +70,19 @@
   {
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API Key",
-   "read_only": 1
+   "label": "API Key"
   },
   {
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API secret",
-   "read_only": 1
+   "label": "API secret"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-29 12:59:26.277023",
+ "modified": "2025-08-04 13:12:49.925034",
  "modified_by": "anjali@example.com",
  "module": "IAssist",
  "name": "IAssist Support Configurations",

@@ -5,7 +5,7 @@ from iassist.iassist.api.api import map_valid_fields, save_attachments_for_doc
 
 
 @frappe.whitelist(allow_guest=False)
-def create_hdticket(data=None):
+def create_ticket(data=None):
     if frappe.request.method != "POST":
         frappe.response["http_status_code"] = 405
         return {
@@ -34,10 +34,10 @@ def create_hdticket(data=None):
     missing = [f for f in required_fields if f not in data]
     if missing:
         return{"message":f"Missing required fields: {', '.join(missing)}"}
+    refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
+    valid_data = map_valid_fields(refer_doctype, data)
 
-    valid_data = map_valid_fields("HD Ticket", data)
-
-    doc = frappe.new_doc("HD Ticket")
+    doc = frappe.new_doc(refer_doctype)
     for key, value in valid_data.items():
         if key!= 'name':
             setattr(doc, key, value)
@@ -46,53 +46,53 @@ def create_hdticket(data=None):
     save_attachments_for_doc(doc, attachments)
     return {
         "status_code": 200,
-        "message": "HD Ticket created successfully",
+        "message": f"{refer_doctype} created successfully",
         "data": {"name": doc.name}
     }
 
 
-@frappe.whitelist()
-def create_issue(data=None):
-    if frappe.request.method != "POST":
-        frappe.response["http_status_code"] = 405
-        return {
-            "status_code": 405,
-            "message": "Method Not Allowed. Please use POST.",
-            "data": {}
-        }
+# @frappe.whitelist()
+# def create_issue(data=None):
+#     if frappe.request.method != "POST":
+#         frappe.response["http_status_code"] = 405
+#         return {
+#             "status_code": 405,
+#             "message": "Method Not Allowed. Please use POST.",
+#             "data": {}
+#         }
 
-    try:
-        if not data:
-            data = frappe.request.data
-            data = json.loads(data)
-    except Exception:
-        return{"message": "Invalid JSON data provided."}
+#     try:
+#         if not data:
+#             data = frappe.request.data
+#             data = json.loads(data)
+#     except Exception:
+#         return{"message": "Invalid JSON data provided."}
 
-    if not isinstance(data, dict):
-        return{"message": "Invalid input format. Expected JSON object."}
+#     if not isinstance(data, dict):
+#         return{"message": "Invalid input format. Expected JSON object."}
 
-    user = frappe.session.user
-    if not frappe.has_permission("Issue", "create", user=user):
-        return{"message":"You do not have permission to create an Issue."}
+#     user = frappe.session.user
+#     if not frappe.has_permission("Issue", "create", user=user):
+#         return{"message":"You do not have permission to create an Issue."}
     
-    attachments = data.pop("attachments", [])
-    required_fields = ["subject"]
-    missing = [f for f in required_fields if f not in data]
-    if missing:
-        return{"message":f"Missing required fields: {', '.join(missing)}"}
+#     attachments = data.pop("attachments", [])
+#     required_fields = ["subject"]
+#     missing = [f for f in required_fields if f not in data]
+#     if missing:
+#         return{"message":f"Missing required fields: {', '.join(missing)}"}
 
-    valid_data = map_valid_fields("Issue", data)
+#     valid_data = map_valid_fields("Issue", data)
 
-    doc = frappe.new_doc("Issue")
-    for key, value in valid_data.items():
-        if key!= 'name':
-            setattr(doc, key, value)
+#     doc = frappe.new_doc("Issue")
+#     for key, value in valid_data.items():
+#         if key!= 'name':
+#             setattr(doc, key, value)
 
-    doc.save(ignore_permissions=True)
-    save_attachments_for_doc(doc, attachments)
-    return {
-        "status_code": 200,
-        "message": "Issue created successfully",
-        "data": {"name": doc.name}
-    }
+#     doc.save(ignore_permissions=True)
+#     save_attachments_for_doc(doc, attachments)
+#     return {
+#         "status_code": 200,
+#         "message": "Issue created successfully",
+#         "data": {"name": doc.name}
+#     }
 

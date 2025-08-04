@@ -1,5 +1,4 @@
 import frappe
-import json
 from frappe import _
 from frappe.model.meta import get_meta
 import requests
@@ -37,22 +36,22 @@ def safe_json_value(value):
 def get_create_url(doctype):
     if not doctype:
         return
-    url=""
-    if doctype=="Issue":
-        url = "/api/method/icentral_support.icentral_support.api.issue.create_issue"
-    elif doctype=="HD Ticket":
-        url = "/api/method/icentral_support.icentral_support.api.hd_ticket.create_hd_ticket"
+    # url=""
+    # if doctype=="Issue":
+    url = "/api/method/icentral_support.icentral_support.api.issue.create_issue"
+    # elif doctype=="HD Ticket":
+    #     url = "/api/method/icentral_support.icentral_support.api.hd_ticket.create_hd_ticket"
     return url
 
 
 def get_update_url(doctype):
     if not doctype:
         return
-    url=""
-    if doctype=="Issue":
-        url = "/api/method/icentral_support.icentral_support.api.issue.update_issue"
-    elif doctype=="HD Ticket":
-        url = "/api/method/icentral_support.icentral_support.api.hd_ticket.update_hd_ticket"
+    # url=""
+    # if doctype=="Issue":
+    url = "/api/method/icentral_support.icentral_support.api.issue.update_issue"
+    # elif doctype=="HD Ticket":
+    #     url = "/api/method/icentral_support.icentral_support.api.hd_ticket.update_hd_ticket"
     return url
 
 
@@ -100,7 +99,9 @@ def get_updated_payload(doc):
     old_doc = frappe.get_doc(doc.doctype, doc.name)
     updated_payload = {}
 
-    exclude_fields = {"contact", "company"}  
+    exclude_fields = {"contact", "company","sla","agreement_status","on_hold_since",
+                      "service_level_agreement_creation","opening_date","opening_time",
+                      "first_responded_on","first_response_time","total_hold_time"}  
 
     for field in doc.meta.fields:
         fieldname = field.fieldname
@@ -122,7 +123,7 @@ def get_updated_payload(doc):
         updated_payload["name"] = doc.custom_master_ticket_id
     else:
         updated_payload["name"] = doc.name
-
+    updated_payload["custom_referred_doctype"] = doc.custom_referred_doctype
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
 
@@ -152,14 +153,15 @@ def sync_to_central_support_to_create(doc, method):
         attachments = get_attachments_for_payload(doc)
         if attachments:
             payload["attachments"] = attachments
-        if doctype == "Issue":
-            payload["custom_iassist_issue_id"] = doc.name
-        elif doctype == "HD Ticket":
-            payload["custom_iassist_hd_ticket"] = doc.name
-
+        # if doctype == "Issue":
+        #     payload["custom_iassist_issue_id"] = doc.name
+        # elif doctype == "HD Ticket":
+        #     payload["custom_iassist_hd_ticket"] = doc.name
+        # elif doctype == "iA Support Ticket":
+        #     payload["iassist_ticket_id"] = doc.name
         payload["synced_from_remote"] = 1
         payload["custom_url"] = frappe.utils.get_url()
-        
+        payload["custom_referred_doctype"] = doc.doctype
         response = requests.post(create_url, json=payload, headers=headers)
         response_data = response.json()
 
@@ -167,11 +169,14 @@ def sync_to_central_support_to_create(doc, method):
 
         if response.status_code == 200:
             doc.custom_sync_status = "Synced"
+            doc.custom_last_sync =  frappe.utils.now()
             name = response_data['message']['data']['name']
             if doctype == "Issue":
                 doc.custom_master_ic_id = name
             elif doctype == "HD Ticket":
                 doc.custom_master_ticket_id = name
+            elif doctype == "iA Support Ticket":
+                doc.central_ticket_id = name
 
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
@@ -196,6 +201,8 @@ def sync_to_central_support_to_update(doc, method):
 
         update_url = f"{base_url}{endpoint_path}"
         payload = get_updated_payload(doc)
+        payload["custom_url"] = frappe.utils.get_url()
+        payload["custom_referred_doctype"] = doc.doctype
         attachments = get_attachments_for_payload(doc)
         if attachments:
             payload["attachments"] = attachments
