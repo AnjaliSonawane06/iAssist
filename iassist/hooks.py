@@ -144,6 +144,9 @@ doc_events = {
     },
     "HD Ticket": {
         "before_save": "iassist.iassist.api.api.before_save",
+    },
+    "iA Support Ticket": {
+        "before_save": "iassist.iassist.api.api.before_save",
     }
 	# "*": {
 	# 	"on_update": "method",

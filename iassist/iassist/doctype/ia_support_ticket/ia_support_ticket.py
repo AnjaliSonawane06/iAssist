@@ -3,7 +3,15 @@
 
 # import frappe
 from frappe.model.document import Document
-
+from iassist.iassist.api.api import before_save
+from frappe.model.naming import make_autoname,revert_series_if_last
 
 class iASupportTicket(Document):
-	pass
+
+	def autoname(self):
+		dot_series = f"IAT.-.#####"
+		self.name = make_autoname(dot_series)
+
+	def on_trash(self):
+		dot_series = f"IAT.-.#####"
+		revert_series_if_last(dot_series, self.name)
