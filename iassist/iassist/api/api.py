@@ -99,7 +99,7 @@ def set_token_daily():
         config.save()
 
 def get_updated_payload(doc):
-    old_doc = frappe.get_doc(doc.doctype, doc.name)
+    old_doc = doc.get_doc_before_save()
     updated_payload = {}
 
     exclude_fields = {"contact", "company","sla","agreement_status","on_hold_since",
