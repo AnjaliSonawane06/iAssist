@@ -140,13 +140,16 @@ app_license = "mit"
 doc_events = {
    
     "Issue": {
-        "before_save": "iassist.iassist.api.api.before_save",
+        "after_insert": "iassist.iassist.api.api.after_insert",
+        "on_update": "iassist.iassist.api.api.on_update"
     },
     "HD Ticket": {
-        "before_save": "iassist.iassist.api.api.before_save",
+        "after_insert": "iassist.iassist.api.api.after_insert",
+        "on_update": "iassist.iassist.api.api.on_update"
     },
     "iA Support Ticket": {
-        "before_save": "iassist.iassist.api.api.before_save",
+        "after_insert": "iassist.iassist.api.api.after_insert",
+        "on_update": "iassist.iassist.api.api.on_update"
     }
 	# "*": {
 	# 	"on_update": "method",
