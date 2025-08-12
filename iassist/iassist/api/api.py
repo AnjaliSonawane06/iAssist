@@ -131,15 +131,31 @@ def get_updated_payload(doc):
     return updated_payload
 
    
-def before_save(doc, method):
-    if doc.is_new():
-        sync_to_central_support_to_create(doc, method)
-    else:
-        sync_to_central_support_to_update(doc, method)
+# def before_save(doc, method):
+#     if doc.is_new():
+#         sync_to_central_support_to_create(doc, method)
+#     else:
+#         sync_to_central_support_to_update(doc, method)
+
+def on_update(doc,method):
+    if getattr(doc.flags,"from_insert",True):
+        return
+    sync_to_central_support_to_update(doc,method)
+
+def after_insert(doc, method):
+    doc.flags.from_insert = True
+    sync_to_central_support_to_create(doc, method)
 
 
 def sync_to_central_support_to_create(doc, method):
     try:
+        if doc.doctype == "Issue" and doc.custom_master_ic_id:
+            return
+        elif doc.doctype == "iA Support Ticket" and doc.central_ticket_id:
+            return
+        elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
+           return
+        
         config = frappe.get_single("IAssist Support Configurations")
         headers = get_configurations(doc)
 
@@ -156,12 +172,7 @@ def sync_to_central_support_to_create(doc, method):
         attachments = get_attachments_for_payload(doc)
         if attachments:
             payload["attachments"] = attachments
-        # if doctype == "Issue":
-        #     payload["custom_iassist_issue_id"] = doc.name
-        # elif doctype == "HD Ticket":
-        #     payload["custom_iassist_hd_ticket"] = doc.name
-        # elif doctype == "iA Support Ticket":
-        #     payload["iassist_ticket_id"] = doc.name
+            
         payload["synced_from_remote"] = 1
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.doctype
@@ -171,19 +182,25 @@ def sync_to_central_support_to_create(doc, method):
         doc.custom_last_sync = frappe.utils.now()
 
         if response.status_code == 200:
-            doc.custom_sync_status = "Synced"
-            doc.custom_last_sync =  frappe.utils.now()
+            frappe.db.set_value(doc.doctype, doc.name, {
+                    "custom_sync_status": "Synced",
+                    "custom_last_sync": frappe.utils.now()
+                })
             name = response_data['message']['data']['name']
             if doctype == "Issue":
-                doc.custom_master_ic_id = name
+                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
+                # doc.custom_master_ic_id = name
             elif doctype == "HD Ticket":
-                doc.custom_master_ticket_id = name
+                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
+                # doc.custom_master_ticket_id = name
             elif doctype == "iA Support Ticket":
-                doc.central_ticket_id = name
+                frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
+                # doc.central_ticket_id = name
 
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
-            doc.custom_sync_status = "Not Synced"
+            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+            # doc.custom_sync_status = "Not Synced"
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
     except Exception:
@@ -213,11 +230,13 @@ def sync_to_central_support_to_update(doc, method):
 
         response = requests.post(update_url, json=payload, headers=headers)
         if response.status_code == 200:
-            doc.custom_sync_status = "Synced"
-            doc.custom_last_sync = frappe.utils.now()
+            frappe.db.set_value(doc.doctype, doc.name, {
+                    "custom_sync_status": "Synced",
+                    "custom_last_sync": frappe.utils.now()
+                })
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
-            doc.custom_sync_status = "Not Synced"
+            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
     except Exception:
