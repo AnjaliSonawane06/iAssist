@@ -147,7 +147,7 @@ doc_events = {
         "after_insert": "iassist.iassist.api.api.after_insert",
         "on_update": "iassist.iassist.api.api.on_update"
     },
-    "iA Support Ticket": {
+    "IA Support Tickets": {
         "after_insert": "iassist.iassist.api.api.after_insert",
         "on_update": "iassist.iassist.api.api.on_update"
     }

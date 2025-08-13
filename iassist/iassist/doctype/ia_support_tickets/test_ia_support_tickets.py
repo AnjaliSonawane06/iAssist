@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestiASupportTicket(FrappeTestCase):
+class TestIASupportTickets(FrappeTestCase):
 	pass

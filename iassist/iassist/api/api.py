@@ -151,7 +151,7 @@ def sync_to_central_support_to_create(doc, method):
     try:
         if doc.doctype == "Issue" and doc.custom_master_ic_id:
             return
-        elif doc.doctype == "iA Support Ticket" and doc.central_ticket_id:
+        elif doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
             return
         elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
            return
@@ -193,7 +193,7 @@ def sync_to_central_support_to_create(doc, method):
             elif doctype == "HD Ticket":
                 frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
                 # doc.custom_master_ticket_id = name
-            elif doctype == "iA Support Ticket":
+            elif doctype == "IA Support Tickets":
                 frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
                 # doc.central_ticket_id = name
 

@@ -1,12 +1,11 @@
 # Copyright (c) 2025, New Indictrans Technologies pvt. ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
-from iassist.iassist.api.api import before_save
 from frappe.model.naming import make_autoname,revert_series_if_last
 
-class iASupportTicket(Document):
+class IASupportTickets(Document):
 
 	def autoname(self):
 		dot_series = f"IAT.-.#####"

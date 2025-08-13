@@ -1,7 +1,8 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-06-13 10:25:09.125748",
+ "creation": "2025-08-13 11:42:26.614274",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -27,7 +28,7 @@
   "section_break_yamu",
   "description",
   "section_break_3dte",
-  "ia_support_ticket_attachments"
+  "support_ticket_attachments"
  ],
  "fields": [
   {
@@ -57,11 +58,6 @@
    "label": "Full Name"
   },
   {
-   "fieldname": "description",
-   "fieldtype": "Text",
-   "label": "Description"
-  },
-  {
    "fieldname": "expected_start_date",
    "fieldtype": "Datetime",
    "label": "Expected Start Date"
@@ -70,6 +66,21 @@
    "fieldname": "expected_end_date",
    "fieldtype": "Datetime",
    "label": "Expected End Date"
+  },
+  {
+   "fieldname": "custom_referred_doctype",
+   "fieldtype": "Data",
+   "label": "Referred Doctype"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nPicked\nResponded\nClosed"
+  },
+  {
+   "fieldname": "column_break_gesv",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "actual_start_date",
@@ -94,6 +105,12 @@
    "options": "\nBug\nTask\nStory\nEpic\nImprovement\nIncident\nService Request"
   },
   {
+   "fieldname": "custom_sync_status",
+   "fieldtype": "Select",
+   "label": "Syncup Status",
+   "options": "\nPending\nSynced\nFailed\nNot Synced"
+  },
+  {
    "fieldname": "subscription_status",
    "fieldtype": "Data",
    "label": "Subscription Status"
@@ -102,29 +119,6 @@
    "fieldname": "central_ticket_id",
    "fieldtype": "Data",
    "label": "Central Ticket Id"
-  },
-  {
-   "fieldname": "ia_support_ticket_attachments",
-   "fieldtype": "Table",
-   "label": "iA Support Ticket Attachments",
-   "options": "iA Support Ticket Attachments"
-  },
-  {
-   "fieldname": "column_break_gesv",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_yamu",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "section_break_3dte",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "custom_referred_doctype",
-   "fieldtype": "Data",
-   "label": "Referred Doctype"
   },
   {
    "fieldname": "custom_last_sync",
@@ -137,25 +131,32 @@
    "label": "URL"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Open\nPicked\nResponded\nClosed"
+   "fieldname": "section_break_yamu",
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "custom_sync_status",
-   "fieldtype": "Select",
-   "label": "Syncup Status",
-   "options": "\nPending\nSynced\nFailed\nNot Synced"
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_3dte",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "support_ticket_attachments",
+   "fieldtype": "Table",
+   "label": "Support Ticket Attachments",
+   "options": "iA Support Ticket Attachments"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 15:22:30.951486",
- "modified_by": "anjali@example.com",
+ "modified": "2025-08-13 11:42:26.614274",
+ "modified_by": "Administrator",
  "module": "IAssist",
- "name": "iA Support Ticket",
+ "name": "IA Support Tickets",
  "owner": "Administrator",
  "permissions": [
   {
