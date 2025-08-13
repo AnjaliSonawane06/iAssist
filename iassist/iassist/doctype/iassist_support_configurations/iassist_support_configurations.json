@@ -6,15 +6,19 @@
  "engine": "InnoDB",
  "field_order": [
   "is_active",
+  "is_multiple_users",
   "project_name",
   "central_support_url",
+  "doctype_for_raising_ticket",
   "deployed_on",
   "column_break_r0t8",
   "username",
   "password",
-  "doctype_for_raising_ticket",
   "api_key",
-  "api_secret"
+  "api_secret",
+  "section_break_afvk",
+  "column_break_kqii",
+  "ics_multi_user_details"
  ],
  "fields": [
   {
@@ -76,14 +80,35 @@
    "fieldname": "api_secret",
    "fieldtype": "Password",
    "label": "API secret"
+  },
+  {
+   "fieldname": "section_break_afvk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_multiple_users",
+   "fieldtype": "Check",
+   "label": "Is Multiple Users"
+  },
+  {
+   "fieldname": "ics_multi_user_details",
+   "fieldtype": "Table",
+   "label": "ICS Multi User Details",
+   "options": "ICS Multi User Details"
+  },
+  {
+   "depends_on": "eval:doc.is_multiple_users == 1\n",
+   "fieldname": "column_break_kqii",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-04 13:12:49.925034",
- "modified_by": "anjali@example.com",
+ "modified": "2025-08-13 14:33:49.241203",
+ "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IAssist Support Configurations",
  "owner": "Administrator",
