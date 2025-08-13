@@ -55,7 +55,7 @@ def update_ticket(data=None):
         doc = frappe.get_doc(refer_doctype, docname)
         if refer_doctype == "Issue":
             valid_fields['custom_master_ic_id'] = docname
-        elif refer_doctype == "iA Support Ticket":
+        elif refer_doctype == "IA Support Tickets":
             valid_fields['central_ticket_id'] = docname
         elif refer_doctype == "HD Ticket":
             valid_fields['custom_master_ticket_id'] = docname

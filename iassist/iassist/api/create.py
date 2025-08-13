@@ -40,7 +40,7 @@ def create_ticket(data=None):
     doc = frappe.new_doc(refer_doctype)
     if refer_doctype == "Issue":
         valid_data['custom_master_ic_id'] = data.get("name")
-    elif refer_doctype == "iA Support Ticket":
+    elif refer_doctype == "IA Support Tickets":
         valid_data['central_ticket_id'] = data.get("name")
     elif refer_doctype == "HD Ticket":
         valid_data['custom_master_ticket_id'] = data.get("name")
