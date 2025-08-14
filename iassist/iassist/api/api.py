@@ -39,22 +39,14 @@ def safe_json_value(value):
 def get_create_url(doctype):
     if not doctype:
         return
-    # url=""
-    # if doctype=="Issue":
     url = "/api/method/icentral_support.icentral_support.api.issue.create_issue"
-    # elif doctype=="HD Ticket":
-    #     url = "/api/method/icentral_support.icentral_support.api.hd_ticket.create_hd_ticket"
     return url
 
 
 def get_update_url(doctype):
     if not doctype:
         return
-    # url=""
-    # if doctype=="Issue":
     url = "/api/method/icentral_support.icentral_support.api.issue.update_issue"
-    # elif doctype=="HD Ticket":
-    #     url = "/api/method/icentral_support.icentral_support.api.hd_ticket.update_hd_ticket"
     return url
 
 
@@ -82,21 +74,33 @@ def generate_token(data=None):
     return {"status": 401, "message": "Invalid login"}
 
 def set_token_daily():
-   
     config = frappe.get_single("IAssist Support Configurations")
+    if not config.is_active:
+        return
     base_url = config.central_support_url.rstrip("/")
     token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
-  
-    data_login = {"username": config.username, "password": config.get_password("password")}
-    auth_response = requests.post(token_url, json=data_login) 
     
-    if auth_response.status_code == 200:
-        auth_data = auth_response.json()
-        api_key = auth_data["message"]["api_key"]
-        api_secret = auth_data["message"]["api_secret"]
-        config.api_key = api_key
-        config.api_secret= api_secret
-        config.save()
+    if config.is_multiple_users:
+        for user_row in config.ics_multi_user_details:
+            data_login = {"username": user_row.username, "password": user_row.get_password("password")}
+            auth_response = requests.post(token_url, json=data_login) 
+    
+            if auth_response.status_code == 200:
+                auth_data = auth_response.json()
+                api_key = auth_data["message"]["api_key"]
+                api_secret = auth_data["message"]["api_secret"]
+                user_row.api_key = api_key
+                user_row.api_secret= api_secret
+    else:
+        data_login = {"username": config.username, "password": config.get_password("password")}
+        auth_response = requests.post(token_url, json=data_login) 
+        if auth_response.status_code == 200:
+            auth_data = auth_response.json()
+            api_key = auth_data["message"]["api_key"]
+            api_secret = auth_data["message"]["api_secret"]
+            config.api_key = api_key
+            config.api_secret = api_secret
+    config.save()
 
 def get_updated_payload(doc):
     old_doc = doc.get_doc_before_save()
@@ -130,12 +134,6 @@ def get_updated_payload(doc):
     updated_payload["custom_last_sync"] = frappe.utils.now()
     return updated_payload
 
-   
-# def before_save(doc, method):
-#     if doc.is_new():
-#         sync_to_central_support_to_create(doc, method)
-#     else:
-#         sync_to_central_support_to_update(doc, method)
 
 def on_update(doc,method):
     if getattr(doc.flags,"from_insert",True):
@@ -149,16 +147,17 @@ def after_insert(doc, method):
 
 def sync_to_central_support_to_create(doc, method):
     try:
-        if doc.doctype == "Issue" and doc.custom_master_ic_id:
+        if check_if_sync_id_exists(doc):
             return
-        elif doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
-            return
-        elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
-           return
         
         config = frappe.get_single("IAssist Support Configurations")
-        headers = get_configurations(doc)
-
+        if get_configurations(doc):
+            headers = get_configurations(doc)
+        else:
+            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+            frappe.msgprint("Central sync failed : User is not available in configurations")
+            frappe.logger().error("Central sync failed : User is not available in configurations")
+ 
         base_url = config.central_support_url.rstrip("/")
         doctype = doc.doctype
         endpoint_path = get_create_url(doctype)
@@ -173,7 +172,6 @@ def sync_to_central_support_to_create(doc, method):
         if attachments:
             payload["attachments"] = attachments
             
-        payload["synced_from_remote"] = 1
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.doctype
         response = requests.post(create_url, json=payload, headers=headers)
@@ -189,18 +187,14 @@ def sync_to_central_support_to_create(doc, method):
             name = response_data['message']['data']['name']
             if doctype == "Issue":
                 frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
-                # doc.custom_master_ic_id = name
             elif doctype == "HD Ticket":
                 frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
-                # doc.custom_master_ticket_id = name
             elif doctype == "IA Support Tickets":
                 frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
-                # doc.central_ticket_id = name
 
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            # doc.custom_sync_status = "Not Synced"
             frappe.logger().error(f"Central sync failed [{response.status_code}]: {response.text}")
 
     except Exception:
@@ -247,10 +241,20 @@ def get_configurations(doc):
 
     if not config.is_active or getattr(doc, "synced_from_remote", 0):
         return
-    api_key = config.api_key
-    api_secret = config.get_password("api_secret")
-    if not api_key or not api_secret:
-        return
+    if config.is_multiple_users:        
+        logged_user = frappe.session.user
+        for user_row in config.ics_multi_user_details:
+            if logged_user == user_row.username:
+                api_key = user_row.api_key
+                api_secret = user_row.get_password("api_secret")
+                break
+            else:
+                return False
+    else:
+        api_key = config.api_key
+        api_secret = config.get_password("api_secret")
+        if not api_key or not api_secret:
+            return
 
     headers = {
         "Authorization": f"token {api_key}:{api_secret}",
@@ -322,3 +326,11 @@ def check_Sync_status_for_hd_ticket():
                 sync_to_central_support_to_create(doc,method=None)
             else:
                 sync_to_central_support_to_update(doc,method=None)
+
+def check_if_sync_id_exists(doc):
+    if doc.doctype == "Issue" and doc.custom_master_ic_id:
+        return
+    elif doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
+        return
+    elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
+        return

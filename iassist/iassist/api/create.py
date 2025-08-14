@@ -26,7 +26,7 @@ def create_ticket(data=None):
         return{"message": "Invalid input format. Expected JSON object."}
 
     user = frappe.session.user
-    if not frappe.has_permission("HD Ticket", "create", user=user):
+    if not frappe.has_permission(refer_doctype, "create", user=user):
         return{"message":"You do not have permission to create an Issue."}
     
     attachments = data.pop("attachments", [])
