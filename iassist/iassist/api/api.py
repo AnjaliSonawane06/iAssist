@@ -180,8 +180,10 @@ def sync_to_central_support_to_create(doc, method):
         doc.custom_last_sync = frappe.utils.now()
 
         if response.status_code == 200:
+            referred_doctype = response_data['message']['data']['doctype']
             frappe.db.set_value(doc.doctype, doc.name, {
                     "custom_sync_status": "Synced",
+                    "custom_referred_doctype":referred_doctype,
                     "custom_last_sync": frappe.utils.now()
                 })
             name = response_data['message']['data']['name']
@@ -205,8 +207,13 @@ def sync_to_central_support_to_update(doc, method):
     try:
         config = frappe.get_single("IAssist Support Configurations")
 
-        headers = get_configurations(doc)
-
+        if get_configurations(doc):
+            headers = get_configurations(doc)
+        else:
+            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+            frappe.msgprint("Central sync failed : User is not available in configurations")
+            frappe.logger().error("Central sync failed : User is not available in configurations")
+ 
         base_url = config.central_support_url.rstrip("/")
         doctype = doc.doctype 
         endpoint_path = get_update_url(doctype)
@@ -334,3 +341,75 @@ def check_if_sync_id_exists(doc):
         return
     elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
         return
+    
+def create_comment_in_icentral(doc,method):
+    if not doc:
+        return
+
+    print("---2233r------doc.",doc.custom_ic_comment_id)
+    if doc.custom_ic_comment_id:
+        return
+    if not (doc.reference_doctype == "Issue" or doc.reference_doctype == "IA Support Tickets" or doc.reference_doctype == "HD Ticket"):
+        return
+    config = frappe.get_single("IAssist Support Configurations")
+    if get_configurations(doc):
+        headers = get_configurations(doc)
+    else:
+        frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+        frappe.msgprint("Central sync failed : User is not available in configurations")
+        frappe.logger().error("Central sync failed : User is not available in configurations")
+
+    base_url = config.central_support_url.rstrip("/")
+    doctype = doc.doctype
+    endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.api.sync_to_iassist.create_comment_in_icentral"
+
+    if not endpoint_path:
+        frappe.logger().error(f"No endpoint defined for Doctype: {doctype}")
+        return
+    referred_doctype = frappe.db.get_value(doc.reference_doctype,filters={'name':doc.reference_name},fieldname=['custom_referred_doctype'])
+    if doc.reference_doctype == "IA Support Tickets":
+        reference_name = frappe.db.get_value(doc.reference_doctype,filters={'name':doc.reference_name},fieldname=['central_ticket_id'])
+    if doc.reference_doctype == "Issue":
+        reference_name = frappe.db.get_value(doc.reference_doctype,filters={'name':doc.reference_name},fieldname=['custom_master_ic_id'])
+    if doc.reference_doctype == "HD Ticket":
+        reference_name = frappe.db.get_value(doc.reference_doctype,filters={'name':doc.reference_name},fieldname=['custom_master_ticket_id'])
+
+    payload = get_doc_payload(doctype, doc)
+    payload["reference_doctype"] = referred_doctype
+    payload["reference_name"] = reference_name
+    # payload["custom_ia_comment_id"]: doc.name
+    print("--------------------------->payload 8rfbduvhrg dvrfhr---------------",payload)
+    response = requests.post(endpoint_path, json=payload, headers=headers)
+    response_data = response.json()
+    if response.status_code == 200:
+        print
+        comment_id = response_data['message']['data']['name']
+        # doc.custom_ic_comment_id = comment_id
+        frappe.db.set_value('Comment', doc.name, 'custom_ic_comment_id', comment_id)
+       
+
+def update_comment_in_icentral(doc,method):
+    if not doc:
+        return
+    if not (doc.reference_doctype == "Issue" or doc.reference_doctype == "IA Support Tickets" or doc.reference_doctype == "HD Ticket"):
+        return
+    config = frappe.get_single("IAssist Support Configurations")
+    if get_configurations(doc):
+        headers = get_configurations(doc)
+    else:
+        frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+        frappe.msgprint("Central sync failed : User is not available in configurations")
+        frappe.logger().error("Central sync failed : User is not available in configurations")
+
+    base_url = config.central_support_url.rstrip("/")
+    doctype = doc.doctype
+    endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.api.sync_to_iassist.update_comment_in_icentral"
+    payload = {"name":doc.custom_ic_comment_id, "content":doc.content}
+
+    if not endpoint_path:
+        frappe.logger().error(f"No endpoint defined for Doctype: {doctype}")
+        return
+    response = requests.post(endpoint_path, json=payload, headers=headers)
+    if response.status_code == 200:
+        return True
+

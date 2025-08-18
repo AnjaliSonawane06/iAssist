@@ -2,6 +2,8 @@ import frappe
 import json
 from frappe import _
 from iassist.iassist.api.api import map_valid_fields, save_attachments_for_doc
+from frappe.desk.form.utils import add_comment
+
 
 
 @frappe.whitelist(allow_guest=False)
@@ -102,3 +104,20 @@ def create_ticket(data=None):
 #         "data": {"name": doc.name}
 #     }
 
+
+@frappe.whitelist()   
+def create_comment_to_sync_in_iassist(data=None):
+    if not data:
+        data = json.loads(frappe.request.data)
+    if not frappe.db.exists("Comment",{'custom_ic_comment_id':data.get("name")},['name']):
+        comment_doc = add_comment(
+        reference_doctype=data.get("reference_doctype"),
+        reference_name=data.get("reference_name"),
+        content=data.get("content"),
+        comment_email=data.get("comment_email"),
+        comment_by=data.get("comment_by"))
+        
+        if data.get("name"):
+            frappe.db.set_value("Comment",comment_doc.name, "custom_ic_comment_id",  data.get("name"))
+        return {"status_code":200,"data":{"name":comment_doc.name}}
+   

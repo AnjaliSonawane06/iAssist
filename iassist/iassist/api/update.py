@@ -5,6 +5,8 @@ from frappe.model.meta import get_meta
 import requests
 from frappe.utils.password import get_decrypted_password
 from iassist.iassist.api.api import *
+from frappe.desk.form.utils import update_comment
+
 
 @frappe.whitelist()
 def update_ticket(data=None):
@@ -141,3 +143,12 @@ def update_ticket(data=None):
 #             "data": {}
 #         }
 
+
+@frappe.whitelist()
+def update_comment_in_iassist(data=None):
+    if not data:
+        data = json.loads(frappe.request.data)
+    
+    update_comment(name= data.get("name"),content=data.get("content"))
+    
+    return {"status_code":200,"data":{"name":data.get("name")}}
