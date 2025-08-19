@@ -346,7 +346,6 @@ def create_comment_in_icentral(doc,method):
     if not doc:
         return
 
-    print("---2233r------doc.",doc.custom_ic_comment_id)
     if doc.custom_ic_comment_id:
         return
     if not (doc.reference_doctype == "Issue" or doc.reference_doctype == "IA Support Tickets" or doc.reference_doctype == "HD Ticket"):
@@ -378,11 +377,9 @@ def create_comment_in_icentral(doc,method):
     payload["reference_doctype"] = referred_doctype
     payload["reference_name"] = reference_name
     # payload["custom_ia_comment_id"]: doc.name
-    print("--------------------------->payload 8rfbduvhrg dvrfhr---------------",payload)
     response = requests.post(endpoint_path, json=payload, headers=headers)
     response_data = response.json()
     if response.status_code == 200:
-        print
         comment_id = response_data['message']['data']['name']
         # doc.custom_ic_comment_id = comment_id
         frappe.db.set_value('Comment', doc.name, 'custom_ic_comment_id', comment_id)
