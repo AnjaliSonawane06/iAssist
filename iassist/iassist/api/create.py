@@ -28,6 +28,8 @@ def create_ticket(data=None):
         return{"message": "Invalid input format. Expected JSON object."}
 
     user = frappe.session.user
+    refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
+
     if not frappe.has_permission(refer_doctype, "create", user=user):
         return{"message":"You do not have permission to create an Issue."}
     
@@ -36,7 +38,6 @@ def create_ticket(data=None):
     missing = [f for f in required_fields if f not in data]
     if missing:
         return{"message":f"Missing required fields: {', '.join(missing)}"}
-    refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
     valid_data = map_valid_fields(refer_doctype, data)
 
     doc = frappe.new_doc(refer_doctype)
@@ -57,7 +58,7 @@ def create_ticket(data=None):
     return {
         "status_code": 200,
         "message": f"{refer_doctype} created successfully",
-        "data": {"name": doc.name}
+        "data": {"name": doc.name,"custom_referred_doctype":refer_doctype}
     }
 # @frappe.whitelist()
 # def create_issue(data=None):
@@ -105,19 +106,19 @@ def create_ticket(data=None):
 #     }
 
 
-@frappe.whitelist()   
-def create_comment_to_sync_in_iassist(data=None):
-    if not data:
-        data = json.loads(frappe.request.data)
-    if not frappe.db.exists("Comment",{'custom_ic_comment_id':data.get("name")},['name']):
-        comment_doc = add_comment(
-        reference_doctype=data.get("reference_doctype"),
-        reference_name=data.get("reference_name"),
-        content=data.get("content"),
-        comment_email=data.get("comment_email"),
-        comment_by=data.get("comment_by"))
+# @frappe.whitelist()   
+# def create_comment_to_sync_in_iassist(data=None):
+#     if not data:
+#         data = json.loads(frappe.request.data)
+#     if not frappe.db.exists("Comment",{'custom_ic_comment_id':data.get("name")},['name']):
+#         comment_doc = add_comment(
+#         reference_doctype=data.get("reference_doctype"),
+#         reference_name=data.get("reference_name"),
+#         content=data.get("content"),
+#         comment_email=data.get("comment_email"),
+#         comment_by=data.get("comment_by"))
         
-        if data.get("name"):
-            frappe.db.set_value("Comment",comment_doc.name, "custom_ic_comment_id",  data.get("name"))
-        return {"status_code":200,"data":{"name":comment_doc.name}}
+#         if data.get("name"):
+#             frappe.db.set_value("Comment",comment_doc.name, "custom_ic_comment_id",  data.get("name"))
+#         return {"status_code":200,"data":{"name":comment_doc.name}}
    

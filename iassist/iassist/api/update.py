@@ -19,8 +19,9 @@ def update_ticket(data=None):
         }
 
     user = frappe.session.user
+    refer_doctype = data.get("custom_referred_doctype")
 
-    if not frappe.has_permission("HD Ticket", "write", user=user):
+    if not frappe.has_permission(refer_doctype, "write", user=user):
         return{"message":"You do not have permission to update this document."}
 
     try:
@@ -35,7 +36,7 @@ def update_ticket(data=None):
         }
 
     
-    refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
+    # refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
     valid_fields = map_valid_fields(refer_doctype, data)
     docname = valid_fields.get("name")
 
@@ -55,12 +56,12 @@ def update_ticket(data=None):
 
     try:
         doc = frappe.get_doc(refer_doctype, docname)
-        if refer_doctype == "Issue":
-            valid_fields['custom_master_ic_id'] = docname
-        elif refer_doctype == "IA Support Tickets":
-            valid_fields['central_ticket_id'] = docname
-        elif refer_doctype == "HD Ticket":
-            valid_fields['custom_master_ticket_id'] = docname
+        # if refer_doctype == "Issue":
+        #     valid_fields['custom_master_ic_id'] = docname
+        # elif refer_doctype == "IA Support Tickets":
+        #     valid_fields['central_ticket_id'] = docname
+        # elif refer_doctype == "HD Ticket":
+        #     valid_fields['custom_master_ticket_id'] = docname
         
         for key, value in valid_fields.items():
             if key != "name":
@@ -144,11 +145,11 @@ def update_ticket(data=None):
 #         }
 
 
-@frappe.whitelist()
-def update_comment_in_iassist(data=None):
-    if not data:
-        data = json.loads(frappe.request.data)
+# @frappe.whitelist()
+# def update_comment_in_iassist(data=None):
+#     if not data:
+#         data = json.loads(frappe.request.data)
     
-    update_comment(name= data.get("name"),content=data.get("content"))
+#     update_comment(name= data.get("name"),content=data.get("content"))
     
-    return {"status_code":200,"data":{"name":data.get("name")}}
+#     return {"status_code":200,"data":{"name":data.get("name")}}
