@@ -15,6 +15,7 @@
   "expected_end_date",
   "custom_referred_doctype",
   "status",
+  "custom_assigned_in_icentral",
   "column_break_gesv",
   "actual_start_date",
   "actual_end_date",
@@ -148,13 +149,18 @@
    "fieldtype": "Table",
    "label": "Support Ticket Attachments",
    "options": "iA Support Ticket Attachments"
+  },
+  {
+   "fieldname": "custom_assigned_in_icentral",
+   "fieldtype": "HTML Editor",
+   "label": "Assigned In Icentral"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-13 11:42:26.614274",
- "modified_by": "Administrator",
+ "modified": "2025-08-20 13:15:47.278168",
+ "modified_by": "anushka@gmail.com",
  "module": "IAssist",
  "name": "IA Support Tickets",
  "owner": "Administrator",
