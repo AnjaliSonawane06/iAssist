@@ -19,11 +19,7 @@ def update_ticket(data=None):
         }
 
     user = frappe.session.user
-    refer_doctype = data.get("custom_referred_doctype")
-
-    if not frappe.has_permission(refer_doctype, "write", user=user):
-        return{"message":"You do not have permission to update this document."}
-
+    
     try:
         if not data:
             data = frappe.request.data
@@ -34,6 +30,11 @@ def update_ticket(data=None):
             "message": f"Invalid request data: {str(e)}",
             "data": {}
         }
+    
+    refer_doctype = data.get("custom_referred_doctype")
+
+    if not frappe.has_permission(refer_doctype, "write", user=user):
+        return{"message":"You do not have permission to update this document."}
 
     
     # refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
