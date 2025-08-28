@@ -63,12 +63,13 @@ def update_ticket(data=None):
         #     valid_fields['central_ticket_id'] = docname
         # elif refer_doctype == "HD Ticket":
         #     valid_fields['custom_master_ticket_id'] = docname
-        attachments = data.pop("attachments", [])
+        # attachments = data.pop("attachments", [])
+        valid_fields.pop('custom_referred_doctype')
         for key, value in valid_fields.items():
             if key != "name":
                 setattr(doc, key, value)
         doc.save(ignore_permissions=True)
-        save_attachments_for_doc(doc, attachments)
+        # save_attachments_for_doc(doc, attachments)
         doc.db_set("custom_sync_status", "Synced", update_modified=False)
         return {
             "status_code": 200,
