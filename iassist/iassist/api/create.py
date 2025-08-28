@@ -53,7 +53,7 @@ def create_ticket(data=None):
         if key!= 'name':
             setattr(doc, key, value)
 
-    doc.save()
+    doc.save(ignore_permissions=True)
     save_attachments_for_doc(doc, attachments)
     return {
         "status_code": 200,

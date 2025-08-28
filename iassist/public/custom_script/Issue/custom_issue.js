@@ -1,8 +1,5 @@
-// Copyright (c) 2025, New Indictrans Technologies pvt. ltd. and contributors
-// For license information, please see license.txt
-
-frappe.ui.form.on("IA Support Tickets", {
-	refresh: function(frm) {
+frappe.ui.form.on("Issue", {
+    refresh: function(frm) {
         frappe.call({
             method: "iassist.iassist.api.api.get_allowed_user",
             args: { doctype: "IAssist Support Configurations" },
