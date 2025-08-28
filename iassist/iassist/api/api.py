@@ -303,6 +303,7 @@ def get_attachments_for_payload(doc):
 
 
 def save_attachments_for_doc(doc, attachments):
+    site_url = frappe.utils.get_url()
     for file in attachments:
         file_name = file.get("file_name")
         file_base64 = file.get("file_base64")
@@ -310,18 +311,27 @@ def save_attachments_for_doc(doc, attachments):
         if not file_name or not file_base64:
             frappe.logger().warning("Attachment skipped due to missing file_name or file_base64.")
             continue
-        try:
-            save_file(
-                fname=file_name,
-                content=file_base64,
-                dt=doc.doctype,
-                dn=doc.name,
-                decode=True,
-                is_private=0
-            )
-        except Exception as e:
-            frappe.logger().error(f"Failed to save attachment {file_name}: {e}")
 
+        # try:
+        file_doc = save_file(
+            fname=file_name,
+            content=file_base64,
+            dt=doc.doctype,
+            dn=doc.name,
+            decode=True
+        )
+
+        if file_doc.file_url:
+            img_tag = f'<p><img src="{site_url}{file_doc.file_url}" /></p>'
+
+            if not doc.description:
+                doc.description = img_tag
+            else:
+                doc.description += img_tag
+        # except Exception as e:
+        #     frappe.logger().error(f"Failed to save attachment {file_name}: {e}")
+
+    doc.save()
 def check_Sync_status_for_issue():
     record_list = frappe.get_all("Issue",['name'])
     for record in record_list:
