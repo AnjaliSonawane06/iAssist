@@ -43,7 +43,8 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Issue" : "public/custom_script/Issue/custom_issue.js",
+              "HD Ticket" : "public/custom_script/hd_ticket/custom_hd_ticket.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -137,20 +138,20 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
+# doc_events = {
    
-    "Issue": {
-        "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.api.api.on_update"
-    },
-    "HD Ticket": {
-        "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.api.api.on_update"
-    },
-    "IA Support Tickets": {
-        "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.api.api.on_update"
-    },
+    # "Issue": {
+    #     "after_insert": "iassist.iassist.api.api.after_insert",
+    #     "on_update": "iassist.iassist.api.api.on_update"
+    # },
+    # "HD Ticket": {
+    #     "after_insert": "iassist.iassist.api.api.after_insert",
+    #     "on_update": "iassist.iassist.api.api.on_update"
+    # },
+    # "IA Support Tickets": {
+    #     "after_insert": "iassist.iassist.api.api.after_insert",
+    #     "on_update": "iassist.iassist.api.api.on_update"
+    # },
     # "Comment": {
     #     "after_insert": "iassist.iassist.api.api.create_comment_in_icentral",
     #     "on_update": "iassist.iassist.api.api.update_comment_in_icentral"
@@ -160,7 +161,7 @@ doc_events = {
 	# 	"on_cancel": "method",
 	# 	"on_trash": "method"
 	# }
-}
+# }
 
 # Scheduled Tasks
 # ---------------

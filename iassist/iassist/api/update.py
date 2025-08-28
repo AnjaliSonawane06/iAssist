@@ -67,8 +67,8 @@ def update_ticket(data=None):
         for key, value in valid_fields.items():
             if key != "name":
                 setattr(doc, key, value)
-        doc.save()
-
+        doc.save(ignore_permissions=True)
+        doc.db_set("custom_sync_status", "Synced", update_modified=False)
         return {
             "status_code": 200,
             "message": f"{refer_doctype} {docname} updated successfully.",
