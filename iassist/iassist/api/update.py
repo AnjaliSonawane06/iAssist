@@ -148,11 +148,66 @@ def update_ticket(data=None):
 #         }
 
 
-# @frappe.whitelist()
-# def update_comment_in_iassist(data=None):
-#     if not data:
-#         data = json.loads(frappe.request.data)
+@frappe.whitelist()
+def update_comment_in_iassist(data=None):
+    if frappe.request.method != "POST":
+        frappe.response["http_status_code"] = 405
+        return {
+            "status_code": 405,
+            "message": "Method Not Allowed. Please use POST.",
+            "data": {}
+        }
+
+    user = frappe.session.user
+    doctype = "Comment"
+
+    try:
+        if not data:
+            data = frappe.request.data
+            data = json.loads(data)
+    except Exception as e:
+        return {
+            "status_code": 400,
+            "message": f"Invalid request data: {str(e)}",
+            "data": {}
+        }
     
-#     update_comment(name= data.get("name"),content=data.get("content"))
+
+    if not frappe.has_permission(doctype, "write", user=user):
+        return{"message":"You do not have permission to update this document."}
+
+    valid_fields = map_valid_fields(doctype, data)
+    docname = valid_fields.get("name")
+
+    if not docname:
+        return {
+            "status_code": 400,
+            "message": "Missing required field: 'name'",
+            "data": {}
+        }
+
+    if not frappe.db.exists(doctype, docname):
+        return {
+            "status_code": 404,
+            "message": f"{doctype} {docname} does not exist.",
+            "data": {}
+        }
+
+    try:
+        doc = frappe.get_doc(doctype, docname)
     
-#     return {"status_code":200,"data":{"name":data.get("name")}}
+        for key, value in valid_fields.items():
+            if key != "name":
+                setattr(doc, key, value)
+        doc.save()
+        return {
+            "status_code": 200,
+            "message": f"{doctype} {docname} updated successfully.",
+            "data": doc.as_dict()
+        }
+    except Exception as e:
+        return {
+            "status_code": 500,
+            "message": f"Error updating document: {str(e)}",
+            "data": {}
+        }
