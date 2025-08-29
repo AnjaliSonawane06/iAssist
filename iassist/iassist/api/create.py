@@ -105,20 +105,41 @@ def create_ticket(data=None):
 #         "data": {"name": doc.name}
 #     }
 
+@frappe.whitelist()
+def create_comment_in_iassist(data=None):
+    if frappe.request.method != "POST":
+        frappe.response["http_status_code"] = 405
+        return {
+            "status_code": 405,
+            "message": "Method Not Allowed. Please use POST.",
+            "data": {}
+        }
+    try:
+        if not data:
+            data = frappe.request.data
+            data = json.loads(data)
 
-# @frappe.whitelist()   
-# def create_comment_to_sync_in_iassist(data=None):
-#     if not data:
-#         data = json.loads(frappe.request.data)
-#     if not frappe.db.exists("Comment",{'custom_ic_comment_id':data.get("name")},['name']):
-#         comment_doc = add_comment(
-#         reference_doctype=data.get("reference_doctype"),
-#         reference_name=data.get("reference_name"),
-#         content=data.get("content"),
-#         comment_email=data.get("comment_email"),
-#         comment_by=data.get("comment_by"))
-        
-#         if data.get("name"):
-#             frappe.db.set_value("Comment",comment_doc.name, "custom_ic_comment_id",  data.get("name"))
-#         return {"status_code":200,"data":{"name":comment_doc.name}}
-   
+    except Exception:
+        return{"message": "Invalid JSON data provided."}
+
+    if not isinstance(data, dict):
+        return{"message": "Invalid input format. Expected JSON object."}
+
+    user = frappe.session.user
+    doctype = "Comment"
+    if not frappe.has_permission(doctype, "create", user=user):
+        return{"message":"You do not have permission to create an Comment"}
+    
+    if frappe.db.exists("Comment", {"custom_ia_comment_id": data.get("name")}):
+        return {"status_code": 200, "data": {"name": data.get("name")}}
+
+    comment_by=data.get("comment_by"),
+    valid_data = map_valid_fields(doctype, data)
+
+    comment_doc = frappe.new_doc(doctype)  
+    for key, value in valid_data.items():
+        if key!= 'name':
+            setattr(comment_doc, key, value)
+    comment_doc.flags.ignore_sync = True
+    comment_doc.save()
+    return {"status_code": 200, "data": {"name": comment_doc.name}}

@@ -138,30 +138,26 @@ doctype_js = {"Issue" : "public/custom_script/Issue/custom_issue.js",
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
+doc_events = {
    
-    # "Issue": {
+    "Issue": {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
-    #     "on_update": "iassist.iassist.api.api.on_update"
-    # },
-    # "HD Ticket": {
+        "on_update": "iassist.iassist.api.api.on_update"
+    },
+    "HD Ticket": {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
-    #     "on_update": "iassist.iassist.api.api.on_update"
-    # },
-    # "IA Support Tickets": {
-    #     "after_insert": "iassist.iassist.api.api.after_insert",
-    #     "on_update": "iassist.iassist.api.api.on_update"
-    # },
-    # "Comment": {
-    #     "after_insert": "iassist.iassist.api.api.create_comment_in_icentral",
-    #     "on_update": "iassist.iassist.api.api.update_comment_in_icentral"
-    # }
+        "on_update": "iassist.iassist.api.api.on_update"
+    },
+    "Comment": {
+        "after_insert": "iassist.iassist.api.api.sync_comment_to_icentral",
+        "on_update": "iassist.iassist.api.api.update_comment_in_icentral"
+    }
 	# "*": {
 	# 	"on_update": "method",
 	# 	"on_cancel": "method",
 	# 	"on_trash": "method"
 	# }
-# }
+}
 
 # Scheduled Tasks
 # ---------------
