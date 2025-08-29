@@ -423,7 +423,7 @@ def sync_comment_to_icentral(doc, method):
     payload["reference_doctype"] = referred_doctype
     payload["reference_name"] = reference_name
     payload["custom_ia_comment_id"] = doc.name
-    payload["custom_comment_from_iassist"] = 1
+    payload["custom_comment_sync_from_iassist"] = 1
     payload["custom_ia_comment_id"] = doc.name
 
     response = requests.post(endpoint_path, json=payload, headers=headers)
