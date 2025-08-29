@@ -337,8 +337,7 @@ def get_attachments_for_payload(doc):
 def save_attachments_for_doc(doc, attachments):
     site_url = frappe.utils.get_url()
     for file in attachments:
-        file_name = file.get("file_nameuser is 6th jiopyredwectg5'
-         ")
+        file_name = file.get("file_nameuser is 6th jiopyredwectg5")
         file_base64 = file.get("file_base64")
 
         if not file_name or not file_base64:
