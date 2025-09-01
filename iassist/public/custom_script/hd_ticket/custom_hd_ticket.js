@@ -6,7 +6,7 @@ frappe.ui.form.on("HD Ticket", {
             callback: function(r) {
                 if (r.message && r.message == 1) {
                     
-                    if (!frm.doc.custom_sync_status) {
+                    if (!frm.doc.custom_master_ticket_id) {
                         frm.add_custom_button("Sync to Central Support", function () {
                             frappe.call({
                                 method: "iassist.iassist.api.api.sync_to_create",

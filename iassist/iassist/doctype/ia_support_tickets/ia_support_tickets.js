@@ -9,7 +9,7 @@ frappe.ui.form.on("IA Support Tickets", {
             callback: function(r) {
                 if (r.message && r.message == 1) {
                     
-                    if (!frm.doc.custom_sync_status) {
+                    if (!frm.doc.central_ticket_id) {
                         frm.add_custom_button("Sync to Central Support", function () {
                             frappe.call({
                                 method: "iassist.iassist.api.api.sync_to_create",

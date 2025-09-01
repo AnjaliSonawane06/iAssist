@@ -67,7 +67,10 @@ def update_ticket(data=None):
         valid_fields.pop('custom_referred_doctype')
         for key, value in valid_fields.items():
             if key != "name":
-                setattr(doc, key, value)
+                if key == "status":
+                    doc.db_set("status", value)
+                else:
+                    setattr(doc, key, value)
         doc.save(ignore_permissions=True)
         # save_attachments_for_doc(doc, attachments)
         doc.db_set("custom_sync_status", "Synced", update_modified=False)
