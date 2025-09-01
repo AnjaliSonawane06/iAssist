@@ -485,4 +485,4 @@ def get_allowed_user():
 
 
 def on_update(doc,method):
-    doc.custom_sync_status = "Not Synced"
+    frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
