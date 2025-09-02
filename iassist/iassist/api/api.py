@@ -125,20 +125,20 @@ def handle_attachments_in_payload(payload):
 
 
 def file_to_base64(file_url):
-    try:
-        clean_url = file_url.split("?")[0]
+    # try:
+    clean_url = file_url.split("?")[0]
 
-        file_path = frappe.get_site_path(clean_url.lstrip("/"))
+    file_path = frappe.get_site_path(clean_url.lstrip("/"))
 
-        with open(file_path, "rb") as f:
-            return base64.b64encode(f.read()).decode("utf-8")
+    with open(file_path, "rb") as f:
+        return base64.b64encode(f.read()).decode("utf-8")
 
-    except Exception as e:
-        frappe.log_error(
-            title="Attachment Encoding Failed",
-            message=f"File: {file_url}, Error: {str(e)}"
-        )
-        return None
+    # except Exception as e:
+    #     frappe.log_error(
+    #         title="Attachment Encoding Failed",
+    #         message=f"File: {file_url}, Error: {str(e)}"
+    #     )
+    #     return None
 
 def get_updated_payload(doc):
     last_sync = doc.custom_last_sync
@@ -175,9 +175,8 @@ def get_updated_payload(doc):
         changed_fields["name"] = doc.central_ticket_id
 
     changed_fields["custom_last_sync"] = frappe.utils.now()
-    if any("/files/" in str(v) for v in changed_fields.values()):
-        changed_fields = handle_attachments_in_payload(changed_fields)
-
+    # if any("/files/" in str(v) for v in changed_fields.values()):
+    #     changed_fields = handle_attachments_in_payload(changed_fields)
     return changed_fields
 
 # def on_update(doc,method):
