@@ -111,7 +111,8 @@
    "fieldname": "custom_sync_status",
    "fieldtype": "Select",
    "label": "Syncup Status",
-   "options": "\nPending\nSynced\nFailed\nNot Synced"
+   "options": "\nPending\nSynced\nFailed\nNot Synced",
+   "read_only": 1
   },
   {
    "fieldname": "subscription_status",
@@ -155,14 +156,15 @@
   {
    "fieldname": "custom_assigned_in_icentral",
    "fieldtype": "HTML Editor",
-   "label": "Assigned In Icentral"
+   "label": "Assigned In Icentral",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-28 09:35:19.881622",
- "modified_by": "anushka@gmail.com",
+ "modified": "2025-09-05 13:07:06.126443",
+ "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
  "owner": "Administrator",

@@ -2,9 +2,6 @@ import frappe
 import json
 from frappe import _
 from iassist.iassist.api.api import map_valid_fields, save_attachments_for_doc
-from frappe.desk.form.utils import add_comment
-
-
 
 @frappe.whitelist(allow_guest=False)
 def create_ticket(data=None):
@@ -60,86 +57,3 @@ def create_ticket(data=None):
         "message": f"{refer_doctype} created successfully",
         "data": {"name": doc.name,"custom_referred_doctype":refer_doctype}
     }
-# @frappe.whitelist()
-# def create_issue(data=None):
-#     if frappe.request.method != "POST":
-#         frappe.response["http_status_code"] = 405
-#         return {
-#             "status_code": 405,
-#             "message": "Method Not Allowed. Please use POST.",
-#             "data": {}
-#         }
-
-#     try:
-#         if not data:
-#             data = frappe.request.data
-#             data = json.loads(data)
-#     except Exception:
-#         return{"message": "Invalid JSON data provided."}
-
-#     if not isinstance(data, dict):
-#         return{"message": "Invalid input format. Expected JSON object."}
-
-#     user = frappe.session.user
-#     if not frappe.has_permission("Issue", "create", user=user):
-#         return{"message":"You do not have permission to create an Issue."}
-    
-#     attachments = data.pop("attachments", [])
-#     required_fields = ["subject"]
-#     missing = [f for f in required_fields if f not in data]
-#     if missing:
-#         return{"message":f"Missing required fields: {', '.join(missing)}"}
-
-#     valid_data = map_valid_fields("Issue", data)
-
-#     doc = frappe.new_doc("Issue")
-#     for key, value in valid_data.items():
-#         if key!= 'name':
-#             setattr(doc, key, value)
-
-#     doc.save(ignore_permissions=True)
-#     save_attachments_for_doc(doc, attachments)
-#     return {
-#         "status_code": 200,
-#         "message": "Issue created successfully",
-#         "data": {"name": doc.name}
-#     }
-
-@frappe.whitelist()
-def create_comment_in_iassist(data=None):
-    if frappe.request.method != "POST":
-        frappe.response["http_status_code"] = 405
-        return {
-            "status_code": 405,
-            "message": "Method Not Allowed. Please use POST.",
-            "data": {}
-        }
-    try:
-        if not data:
-            data = frappe.request.data
-            data = json.loads(data)
-
-    except Exception:
-        return{"message": "Invalid JSON data provided."}
-
-    if not isinstance(data, dict):
-        return{"message": "Invalid input format. Expected JSON object."}
-
-    user = frappe.session.user
-    doctype = "Comment"
-    if not frappe.has_permission(doctype, "create", user=user):
-        return{"message":"You do not have permission to create an Comment"}
-    
-    if frappe.db.exists("Comment", {"custom_ia_comment_id": data.get("name")}):
-        return {"status_code": 200, "data": {"name": data.get("name")}}
-
-    comment_by=data.get("comment_by"),
-    valid_data = map_valid_fields(doctype, data)
-
-    comment_doc = frappe.new_doc(doctype)  
-    for key, value in valid_data.items():
-        if key!= 'name':
-            setattr(comment_doc, key, value)
-    comment_doc.flags.ignore_sync = True
-    comment_doc.save()
-    return {"status_code": 200, "data": {"name": comment_doc.name}}

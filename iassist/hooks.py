@@ -147,11 +147,7 @@ doc_events = {
     "HD Ticket": {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
         "on_update": "iassist.iassist.api.api.on_update"
-    },
-    # "Comment": {
-    #     "after_insert": "iassist.iassist.api.api.sync_comment_to_icentral",
-    #     "on_update": "iassist.iassist.api.api.update_comment_in_icentral"
-    # }
+    }
 	# "*": {
 	# 	"on_update": "method",
 	# 	"on_cancel": "method",
