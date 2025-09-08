@@ -53,14 +53,9 @@ def update_ticket(data=None):
 
     try:
         doc = frappe.get_doc(refer_doctype, docname)
-        # if refer_doctype == "Issue":
-        #     valid_fields['custom_master_ic_id'] = docname
-        # elif refer_doctype == "IA Support Tickets":
-        #     valid_fields['central_ticket_id'] = docname
-        # elif refer_doctype == "HD Ticket":
-        #     valid_fields['custom_master_ticket_id'] = docname
-        # attachments = data.pop("attachments", [])
+        
         valid_fields.pop('custom_referred_doctype')
+        assigned_users = data.get('assignees_list') or ""
         for key, value in valid_fields.items():
             if key != 'name':
                 df = doc.meta.get_field(key)
@@ -74,8 +69,11 @@ def update_ticket(data=None):
                     if key == "status":
                         doc.db_set("status", value)   
         doc.save()
-        # save_attachments_for_doc(doc, attachments)
-        doc.db_set("custom_sync_status", "Synced", update_modified=False)
+        
+        doc.db_set("custom_sync_status", "Synced")
+        assigned_users_html = build_assigned_users_table(assigned_users)
+        doc.db_set("custom_assigned_in_icentral", assigned_users_html)
+       
         return {
             "status_code": 200,
             "message": f"{refer_doctype} {docname} updated successfully.",
@@ -88,3 +86,18 @@ def update_ticket(data=None):
             "message": f"Error updating document: {str(e)}",
             "data": {}
         }
+def build_assigned_users_table(assigned_users):
+
+    if not assigned_users:
+        return  
+
+    rows = "".join(f"<tr><td>{i+1}</td><td>{user}</td></tr>" for i, user in enumerate(assigned_users))
+    
+    table_html = (
+        '<table class="table table-bordered small">'
+        '<thead><tr><th>Sr No</th><th>Assigned Users</th></tr></thead>'
+        f'<tbody>{rows}</tbody>'
+        '</table>'
+    )
+    
+    return table_html
