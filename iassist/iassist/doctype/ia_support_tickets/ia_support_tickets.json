@@ -155,7 +155,7 @@
   },
   {
    "fieldname": "custom_assigned_in_icentral",
-   "fieldtype": "HTML Editor",
+   "fieldtype": "Text Editor",
    "label": "Assigned In Icentral",
    "read_only": 1
   }
@@ -163,7 +163,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-05 13:07:06.126443",
+ "modified": "2025-09-08 10:22:15.816326",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
