@@ -36,7 +36,7 @@ def update_ticket(data=None):
     # refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
     valid_fields = map_valid_fields(refer_doctype, data)
     docname = valid_fields.get("name")
-
+    attachments = data.pop("attachments",[])
     if not docname:
         return {
             "status_code": 400,
@@ -53,7 +53,6 @@ def update_ticket(data=None):
 
     try:
         doc = frappe.get_doc(refer_doctype, docname)
-        
         valid_fields.pop('custom_referred_doctype')
         assigned_users = data.get('assignees_list') or ""
         for key, value in valid_fields.items():
@@ -71,9 +70,11 @@ def update_ticket(data=None):
         doc.save()
         
         doc.db_set("custom_sync_status", "Synced")
-        assigned_users_html = build_assigned_users_table(assigned_users)
-        doc.db_set("custom_assigned_in_icentral", assigned_users_html)
-       
+        if assigned_users:
+            assigned_users_html = build_assigned_users_table(assigned_users)
+            doc.db_set("custom_assigned_in_icentral", assigned_users_html)
+        if attachments:
+            save_attachments_for_doc(doc,attachments)
         return {
             "status_code": 200,
             "message": f"{refer_doctype} {docname} updated successfully.",

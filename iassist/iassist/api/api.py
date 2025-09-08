@@ -2,8 +2,8 @@ import frappe
 from frappe import _
 from frappe.model.meta import get_meta
 import requests
-import base64
 from frappe.utils.file_manager import save_file
+import os, base64, re
 
 def map_valid_fields(doctype, data):
     meta = get_meta(doctype)
@@ -117,7 +117,7 @@ def get_updated_payload(doc):
     return changed_fields
 
 def sync_to_central_support_to_create(doc):
-    try:
+    # try:
         if check_if_sync_id_exists(doc):
             return
         config = frappe.get_single("IAssist Support Configurations")
@@ -139,6 +139,7 @@ def sync_to_central_support_to_create(doc):
         create_url = f"{base_url}{endpoint_path}"
 
         payload = get_doc_payload(doctype, doc)
+        payload["attachments"] = get_attachments_for_payload(doc)
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.doctype
         payload["custom_sync_status"] = "Synced"
@@ -163,14 +164,12 @@ def sync_to_central_support_to_create(doc):
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            frappe.log_error(f"Central sync failed [{response.status_code}]: {response.text}")
-
-    except Exception:
-        frappe.log_error(f"Error during sync to central: {frappe.get_traceback()}")
-
+            frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
+    # except Exception:
+    #     frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
 
 def sync_to_central_support_to_update(doc):
-    try:
+    # try:
         config = frappe.get_single("IAssist Support Configurations")
         if get_configurations(doc):
             headers = get_configurations(doc)
@@ -188,6 +187,8 @@ def sync_to_central_support_to_update(doc):
 
         update_url = f"{base_url}{endpoint_path}"
         payload = get_updated_payload(doc)
+        payload["attachments"]= get_attachments_for_payload(doc)
+        print("---------update------>>>>>>.payload",payload["attachments"])
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.custom_referred_doctype
         payload["custom_sync_status"] = "Synced"
@@ -199,9 +200,9 @@ def sync_to_central_support_to_update(doc):
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            frappe.log_error(f"Central sync failed [{response.status_code}]: {response.text}")
-    except Exception:
-        frappe.log_error(f"Error during sync to central: {frappe.get_traceback()}")
+            frappe.log_error(f"Central sync failed [{response.status_code}]",message =response.text)
+    # except Exception:
+    #     frappe.log_error(f"Error during sync to central: {frappe.get_traceback()}")
 
 def get_configurations(doc):
     config = frappe.get_single("IAssist Support Configurations")
@@ -272,3 +273,117 @@ def get_common_fields(doc):
         key:safe_json_value(value) for key,value in doc_dict.items() if key in valid_fieldname 
     }
     return payload
+
+
+def file_to_base64(file_url):
+    try:
+        clean_url = file_url.split("?")[0]
+
+        file_path = frappe.get_site_path(clean_url.lstrip("/"))
+
+        with open(file_path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+
+    except Exception as e:
+       
+        frappe.log_error(
+            title="Attachment Encoding Failed",
+            message=f"File: {file_url}, Error: {str(e)}"
+        )
+        return None
+    
+
+def get_attachments_for_payload(doc):
+    attachments_payload = []
+
+    files = frappe.get_all(
+        "File",
+        filters={
+            "attached_to_doctype": doc.doctype,
+            "attached_to_name": doc.name
+        },
+        fields=["file_name", "file_url", "file_type"]
+    )
+
+    html_fields = {
+        "description": getattr(doc, "description", "") or "",
+        "resolution_details": getattr(doc, "resolution_details", "") or ""
+    }
+
+    for file_info in files:
+        try:
+            if file_info.file_url.startswith("/private"):
+                file_path = frappe.get_site_path(file_info.file_url.lstrip("/"))
+            else:
+                file_path = frappe.get_site_path("public", file_info.file_url.lstrip("/"))
+
+            if not os.path.exists(file_path):
+                continue
+
+            with open(file_path, "rb") as f:
+                encoded_content = base64.b64encode(f.read()).decode()
+
+            related_to = "attachment"
+            for field, html in html_fields.items():
+                if file_info.file_url in html:
+                    related_to = field
+                    break
+
+            attachments_payload.append({
+                "file_name": file_info.file_name,
+                "file_type": file_info.file_type,
+                "file_base64": encoded_content,
+                "related_to": related_to 
+            })
+
+        except Exception as e:
+            frappe.log_error(title=f"Error encoding file {file_info.file_name}",message=str(e))
+
+    return attachments_payload
+
+def save_attachments_for_doc(doc, attachments):
+    if not attachments:
+        return
+
+    saved_files = []
+
+    for file in attachments:
+        file_name = file.get("file_name")
+        file_base64 = file.get("file_base64")
+        related_to = file.get("related_to") or "attachment"
+
+        if not file_name or not file_base64:
+            frappe.log_error(f"Invalid attachment payload: {file}")
+            continue
+
+        try:
+            file_doc = save_file(
+                fname=file_name,
+                content=file_base64,
+                dt=doc.doctype,
+                dn=doc.name,
+                decode=True
+            )
+
+            saved_files.append(file_doc.file_url)
+
+            if related_to in ["description", "resolution_details"]:
+                html_value = getattr(doc, related_to, "") or ""
+
+                html_value = re.sub(
+                    r'src="[^"]+"',
+                    f'src="{file_doc.file_url}"',
+                    html_value,
+                    count=1 
+                )
+
+                setattr(doc, related_to, html_value)
+
+        except Exception as e:
+            frappe.log_error(title=f"Failed to save attachment {file_name}",message=str(e))
+
+    if saved_files:
+        doc.save(ignore_permissions=True) 
+
+    return saved_files
+
