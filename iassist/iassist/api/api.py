@@ -377,13 +377,13 @@ def save_attachments_for_doc(doc, attachments):
                     count=1 
                 )
 
-                setattr(doc, related_to, html_value)
-
+                # setattr(doc, related_to, html_value)
+                doc.db_set(related_to,html_value)
         except Exception as e:
             frappe.log_error(title=f"Failed to save attachment {file_name}",message=str(e))
 
-    if saved_files:
-        doc.save(ignore_permissions=True) 
+    # if saved_files:
+    #     doc.save(ignore_permissions=True) 
 
     return saved_files
 
