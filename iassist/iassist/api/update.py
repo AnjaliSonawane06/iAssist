@@ -54,7 +54,7 @@ def update_ticket(data=None):
     try:
         doc = frappe.get_doc(refer_doctype, docname)
         valid_fields.pop('custom_referred_doctype')
-        assigned_users = data.get('assignees_list') or ""
+        assigned_users = data.get("assignees_list", "not_provided")
         for key, value in valid_fields.items():
             if key != 'name':
                 df = doc.meta.get_field(key)
@@ -70,9 +70,12 @@ def update_ticket(data=None):
         doc.save()
         
         doc.db_set("custom_sync_status", "Synced")
-        if assigned_users:
-            assigned_users_html = build_assigned_users_table(assigned_users)
-            doc.db_set("custom_assigned_in_icentral", assigned_users_html)
+        if assigned_users != "not_provided": 
+            if not assigned_users: 
+                doc.db_set("custom_assigned_in_icentral", "")
+            else:
+                assigned_users_html = build_assigned_users_table(assigned_users)
+                doc.db_set("custom_assigned_in_icentral", assigned_users_html)
         if attachments:
             save_attachments_for_doc(doc,attachments)
         return {
@@ -90,7 +93,7 @@ def update_ticket(data=None):
 def build_assigned_users_table(assigned_users):
 
     if not assigned_users:
-        return  
+        return "" 
 
     rows = "".join(f"<tr><td>{i+1}</td><td>{user}</td></tr>" for i, user in enumerate(assigned_users))
     

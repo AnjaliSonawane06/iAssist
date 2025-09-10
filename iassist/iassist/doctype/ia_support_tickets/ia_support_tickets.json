@@ -26,6 +26,7 @@
   "central_ticket_id",
   "custom_last_sync",
   "custom_url",
+  "summary",
   "section_break_yamu",
   "description",
   "section_break_3dte",
@@ -158,12 +159,17 @@
    "fieldtype": "Text Editor",
    "label": "Assigned In Icentral",
    "read_only": 1
+  },
+  {
+   "fieldname": "summary",
+   "fieldtype": "Text Editor",
+   "label": "Summary"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-09 18:14:17.146809",
+ "modified": "2025-09-10 12:46:35.481781",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
