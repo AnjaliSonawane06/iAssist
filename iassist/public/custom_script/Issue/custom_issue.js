@@ -16,8 +16,11 @@ frappe.ui.form.on("Issue", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
+                                        let message = (typeof res.message === "string") 
+                                            ? res.message 
+                                            : JSON.stringify(res.message);
 
-                                        frappe.msgprint(res.message);
+                                        frappe.msgprint(message);
                                         frm.reload_doc();
                                     }
                                 }
@@ -34,7 +37,11 @@ frappe.ui.form.on("Issue", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
-                                        frappe.msgprint(res.message);
+                                        let message = (typeof res.message === "string") 
+                                            ? res.message 
+                                            : JSON.stringify(res.message);
+                                        console.log("-->>",message)
+                                        frappe.msgprint(message);
                                         frm.reload_doc();
                                     }
                                 }

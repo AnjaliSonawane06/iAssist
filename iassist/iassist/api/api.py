@@ -247,8 +247,8 @@ def sync_to_create(doctype,docname):
 @frappe.whitelist()
 def sync_to_update(docname, doctype):
     doc = frappe.get_doc(doctype,docname)
-    sync_to_central_support_to_update(doc)
-    return {"status": "success"}
+    # sync_to_central_support_to_update(doc)
+    return sync_to_central_support_to_update(doc)
 
 @frappe.whitelist()
 def get_allowed_user():
@@ -313,7 +313,8 @@ def get_attachments_for_payload(doc):
 
     html_fields = {
         "description": getattr(doc, "description", "") or "",
-        "resolution_details": getattr(doc, "resolution_details", "") or ""
+        "resolution_details": getattr(doc, "resolution_details", "") or "",
+        "summary": getattr(doc,"summary", "") or ""
     }
 
     for file_info in files:
@@ -373,7 +374,7 @@ def save_attachments_for_doc(doc, attachments):
 
             saved_files.append(file_doc.file_url)
 
-            if related_to in ["description", "resolution_details"]:
+            if related_to in ["description", "resolution_details","summary"]:
                 html_value = getattr(doc, related_to, "") or ""
 
                 html_value = re.sub(
