@@ -16,7 +16,11 @@ frappe.ui.form.on("HD Ticket", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
-                                        frappe.msgprint("Ticket synced successfully!");
+                                        let message = (typeof res.message === "string") 
+                                            ? res.message 
+                                            : JSON.stringify(res.message);
+
+                                        frappe.msgprint(message);
                                         frm.reload_doc();
                                     }
                                 }
@@ -33,7 +37,11 @@ frappe.ui.form.on("HD Ticket", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
-                                        frappe.msgprint("Ticket updated successfully!");
+                                        let message = (typeof res.message === "string") 
+                                            ? res.message 
+                                            : JSON.stringify(res.message);
+
+                                        frappe.msgprint(message);
                                         frm.reload_doc();
                                     }
                                 }
