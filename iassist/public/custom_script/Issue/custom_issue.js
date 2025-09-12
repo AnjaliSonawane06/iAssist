@@ -16,7 +16,8 @@ frappe.ui.form.on("Issue", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
-                                        frappe.msgprint("Ticket synced successfully!");
+
+                                        frappe.msgprint(res.message);
                                         frm.reload_doc();
                                     }
                                 }
@@ -33,7 +34,7 @@ frappe.ui.form.on("Issue", {
                                 },
                                 callback: function (res) {
                                     if (!res.exc) {
-                                        frappe.msgprint("Ticket updated successfully!");
+                                        frappe.msgprint(res.message);
                                         frm.reload_doc();
                                     }
                                 }

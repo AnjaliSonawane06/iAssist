@@ -40,14 +40,14 @@ def update_ticket(data=None):
     if not docname:
         return {
             "status_code": 400,
-            "message": "Missing required field: 'name'",
+            "message": "Missing required field to update on IAssist:'name'",
             "data": {}
         }
 
     if not frappe.db.exists(refer_doctype, docname):
         return {
             "status_code": 404,
-            "message": f"{refer_doctype} {docname} does not exist.",
+            "message": f"{refer_doctype} {docname} does not exist on IAssist.",
             "data": {}
         }
 
@@ -87,7 +87,7 @@ def update_ticket(data=None):
     except Exception as e:
         return {
             "status_code": 500,
-            "message": f"Error updating document: {str(e)}",
+            "message": f"Error updating document on IAssist {str(e)}",
             "data": {}
         }
 def build_assigned_users_table(assigned_users):
@@ -99,7 +99,7 @@ def build_assigned_users_table(assigned_users):
     
     table_html = (
         '<table class="table table-bordered small">'
-        '<thead><tr><th>Sr No</th><th>Assigned Users</th></tr></thead>'
+        '<thead><tr><th>Sr No</th><th>Assigned To</th></tr></thead>'
         f'<tbody>{rows}</tbody>'
         '</table>'
     )
