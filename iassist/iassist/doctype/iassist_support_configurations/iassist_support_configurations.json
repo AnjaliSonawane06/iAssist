@@ -29,9 +29,8 @@
   },
   {
    "fieldname": "project_name",
-   "fieldtype": "Link",
-   "label": "Project Name",
-   "options": "Project"
+   "fieldtype": "Data",
+   "label": "Project Name"
   },
   {
    "fieldname": "central_support_url",
@@ -47,12 +46,13 @@
    "options": "\nLive\nUAT\nLocal"
   },
   {
+   "depends_on": "eval:doc.is_multiple_users==0;",
    "fieldname": "username",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Username",
-   "options": "Email",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.is_multiple_users==0;",
+   "options": "Email"
   },
   {
    "fieldname": "doctype_for_raising_ticket",
@@ -61,27 +61,31 @@
    "options": "DocType"
   },
   {
+   "depends_on": "eval:doc.is_multiple_users==0;",
    "fieldname": "password",
    "fieldtype": "Password",
    "in_list_view": 1,
    "label": "Password",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.is_multiple_users==0;"
   },
   {
    "fieldname": "column_break_r0t8",
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.is_multiple_users==0;",
    "fieldname": "api_key",
    "fieldtype": "Data",
    "label": "API Key"
   },
   {
+   "depends_on": "eval:doc.is_multiple_users==0;",
    "fieldname": "api_secret",
    "fieldtype": "Password",
    "label": "API secret"
   },
   {
+   "depends_on": "eval:doc.is_multiple_users==1;",
    "fieldname": "section_break_afvk",
    "fieldtype": "Section Break"
   },
@@ -108,7 +112,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-09 18:21:36.863067",
+ "modified": "2025-09-16 10:51:26.353181",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IAssist Support Configurations",

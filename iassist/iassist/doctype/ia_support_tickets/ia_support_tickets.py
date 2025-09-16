@@ -6,6 +6,11 @@ from frappe.model.document import Document
 from frappe.model.naming import make_autoname,revert_series_if_last
 
 class IASupportTickets(Document):
+	def validate(self):
+		self.raised_by = frappe.session.user
+		if self.raised_by:
+			self.full_name = frappe.db.get_value("User",{'name':self.raised_by},fieldname=['full_name'])
+
 	def autoname(self):
 		dot_series = f"IAT.-.#####"
 		self.name = make_autoname(dot_series)
@@ -16,4 +21,3 @@ class IASupportTickets(Document):
 	
 	def on_update(self):
 		self.custom_sync_status = "Not Synced"
-

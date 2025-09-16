@@ -146,14 +146,18 @@ def sync_to_central_support_to_create(doc):
         response = requests.post(create_url, json=payload, headers=headers)
         response_data = response.json()
         doc.custom_last_sync = frappe.utils.now()
-        if response_data['message']['status_code'] == 200:
-            referred_doctype = response_data['message']['data']['doctype']
+
+        if response.status_code == 401 or response.status_code == 403:
+            return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
+
+        if response_data.get("message", {}).get("status_code") == 200:
+            referred_doctype = response_data.get("message", {}).get("data").get("doctype")
             frappe.db.set_value(doc.doctype, doc.name, {
                     "custom_sync_status": "Synced",
                     "custom_referred_doctype":referred_doctype,
                     "custom_last_sync": frappe.utils.now()
                 })
-            name = response_data['message']['data']['name']
+            name = response_data.get("message", {}).get("data").get("name")
             if doctype == "Issue":
                 frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
             elif doctype == "HD Ticket":
@@ -165,10 +169,13 @@ def sync_to_central_support_to_create(doc):
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
-            return f"{response_data['message']['message']}"
+            message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+            return str(message)
     except Exception:
         frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
-        return f"{response_data['message']['message']}"
+        message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+        return str(message)
+
     
 def sync_to_central_support_to_update(doc):
     try:
@@ -196,19 +203,22 @@ def sync_to_central_support_to_update(doc):
       
         response = requests.post(update_url, json=payload, headers=headers)
         response_data = response.json()
-
-        if response.status_code == 200:
+        if response.status_code == 401 or response.status_code == 403:
+            return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
+        if response_data.get("message", {}).get("status_code") == 200:
             frappe.db.set_value(doc.doctype, doc.name,"custom_sync_status", "Synced")
             frappe.db.set_value(doc.doctype, doc.name,"custom_last_sync",frappe.utils.now())
             return {"message": "Issue synced successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.log_error(f"Central sync failed [{response.status_code}]",message =response.text)
-            return f"{response_data['message']['message']}"
+            message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+            return str(message)
     except Exception:
         frappe.log_error(f"Error during sync to central: {frappe.get_traceback()}")
-        return f"{response_data['message']['message']}"
-    
+        message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+        return str(message)
+
 def get_configurations(doc):
     config = frappe.get_single("IAssist Support Configurations")
     if not config.is_active:
