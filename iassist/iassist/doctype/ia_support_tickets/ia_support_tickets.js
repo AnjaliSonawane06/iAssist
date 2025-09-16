@@ -10,7 +10,7 @@ frappe.ui.form.on("IA Support Tickets", {
                 if (r.message && r.message == 1) {
                     
                     if (!frm.doc.central_ticket_id) {
-                        frm.add_custom_button("Sync to Central Support", function () {
+                        frm.add_custom_button("Raise Ticket", function () {
                             frappe.call({
                                 method: "iassist.iassist.api.api.sync_to_create",
                                 args: {
@@ -31,7 +31,7 @@ frappe.ui.form.on("IA Support Tickets", {
                         });
                     } 
                     else {
-                        frm.add_custom_button("Update to Central Support", function () {
+                        frm.add_custom_button("Update Ticket", function () {
                             frappe.call({
                                 method: "iassist.iassist.api.api.sync_to_update",
                                 args: {

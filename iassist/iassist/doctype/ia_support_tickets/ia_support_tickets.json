@@ -6,38 +6,38 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "project_name",
+  "project",
   "subject",
-  "posting_date",
-  "user_id",
-  "full_name",
-  "expected_start_date",
-  "expected_end_date",
-  "custom_referred_doctype",
   "status",
-  "custom_assigned_in_icentral",
+  "custom_last_sync",
+  "custom_sync_status",
+  "custom_url",
+  "central_ticket_id",
+  "custom_referred_doctype",
   "column_break_gesv",
-  "actual_start_date",
-  "actual_end_date",
+  "raised_by",
+  "full_name",
   "priority",
   "issue_type",
-  "custom_sync_status",
-  "subscription_status",
-  "central_ticket_id",
-  "custom_last_sync",
-  "custom_url",
-  "summary",
+  "custom_assigned_in_icentral",
   "section_break_yamu",
   "description",
+  "summary",
+  "support_ticket_attachments",
+  "tab_break_eouo",
+  "posting_date",
+  "actual_start_date",
+  "actual_end_date",
   "section_break_3dte",
-  "support_ticket_attachments"
+  "subscription_status",
+  "expected_start_date",
+  "expected_end_date",
+  "feedback_tab",
+  "feedback_rating",
+  "feedback",
+  "feedback_extra"
  ],
  "fields": [
-  {
-   "fieldname": "project_name",
-   "fieldtype": "Data",
-   "label": "Project Name"
-  },
   {
    "fieldname": "subject",
    "fieldtype": "Data",
@@ -46,20 +46,16 @@
    "reqd": 1
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date"
   },
   {
-   "fieldname": "user_id",
-   "fieldtype": "Data",
-   "label": "User ID",
-   "options": "Email"
-  },
-  {
    "fieldname": "full_name",
    "fieldtype": "Data",
-   "label": "Full Name"
+   "label": "Full Name",
+   "read_only": 1
   },
   {
    "fieldname": "expected_start_date",
@@ -74,7 +70,8 @@
   {
    "fieldname": "custom_referred_doctype",
    "fieldtype": "Data",
-   "label": "Referred Doctype"
+   "label": "Referred Doctype",
+   "read_only": 1
   },
   {
    "fieldname": "status",
@@ -111,33 +108,38 @@
   {
    "fieldname": "custom_sync_status",
    "fieldtype": "Select",
-   "label": "Syncup Status",
+   "label": "Sync Status",
    "options": "\nPending\nSynced\nFailed\nNot Synced",
    "read_only": 1
   },
   {
    "fieldname": "subscription_status",
    "fieldtype": "Data",
-   "label": "Subscription Status"
+   "label": "Subscription Status",
+   "read_only": 1
   },
   {
    "fieldname": "central_ticket_id",
    "fieldtype": "Data",
-   "label": "Central Ticket Id"
+   "label": "Central Ticket Id",
+   "read_only": 1
   },
   {
    "fieldname": "custom_last_sync",
    "fieldtype": "Datetime",
-   "label": "Last Sync"
+   "label": "Last Sync",
+   "read_only": 1
   },
   {
    "fieldname": "custom_url",
    "fieldtype": "Data",
-   "label": "URL"
+   "label": "URL",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_yamu",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Details"
   },
   {
    "fieldname": "description",
@@ -146,7 +148,7 @@
   },
   {
    "fieldname": "section_break_3dte",
-   "fieldtype": "Section Break"
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "support_ticket_attachments",
@@ -164,12 +166,48 @@
    "fieldname": "summary",
    "fieldtype": "Text Editor",
    "label": "Summary"
+  },
+  {
+   "fieldname": "tab_break_eouo",
+   "fieldtype": "Tab Break",
+   "label": "Timeline"
+  },
+  {
+   "fieldname": "raised_by",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "options": "Email"
+  },
+  {
+   "fieldname": "feedback_tab",
+   "fieldtype": "Tab Break",
+   "label": "Feedback"
+  },
+  {
+   "fieldname": "feedback",
+   "fieldtype": "Data",
+   "label": "Feedback"
+  },
+  {
+   "fieldname": "feedback_extra",
+   "fieldtype": "Long Text",
+   "label": "Feedback(Extra)"
+  },
+  {
+   "fieldname": "feedback_rating",
+   "fieldtype": "Rating",
+   "label": "Rating"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Data",
+   "label": "Project Name"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-10 12:46:35.481781",
+ "modified": "2025-09-15 22:27:53.420796",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
