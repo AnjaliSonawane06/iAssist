@@ -4,6 +4,7 @@
 
 frappe.ui.form.on("IAssist Support Configurations", {
     refresh: function (frm) {
+        if(!frm.doc.__islocal){
         frm.add_custom_button("Generate Token", function () {
             frappe.call({
                 method: "iassist.iassist.doctype.iassist_support_configurations.iassist_support_configurations.generate_token_on_custom_button",
@@ -24,6 +25,7 @@ frappe.ui.form.on("IAssist Support Configurations", {
                 }
             });
         });
+    }
     }
 });
 

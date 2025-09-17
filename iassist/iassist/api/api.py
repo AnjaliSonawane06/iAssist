@@ -58,22 +58,24 @@ def generate_token(data=None):
 
     username = data.get("username")
     password = data.get("password")
-    login_url = f"{frappe.utils.get_url()}/api/method/login"
-    response = requests.post(login_url, data={"usr": username, "pwd": password})
-    if response.status_code == 200:
-        user_doc = frappe.get_doc("User", username)
-        if not user_doc.api_key:
-            user_doc.api_key = frappe.generate_hash(length=15)
-        user_doc.api_secret = frappe.generate_hash(length=15)
-        user_doc.save(ignore_permissions=True)
-        
-        return {
-        "status": 200,
-        "api_key": user_doc.api_key,
-        "api_secret": user_doc.get_password("api_secret")
-        }
+    if frappe.db.exists("User",{'name':username},'name'):
+        login_url = f"{frappe.utils.get_url()}/api/method/login"
+        response = requests.post(login_url, data={"usr": username, "pwd": password})
+        if response.status_code == 200:
+            frappe.set_user(username)
+            user_doc = frappe.get_doc("User", username)
+            if not user_doc.api_key:
+                user_doc.api_key = frappe.generate_hash(length=15)
+            user_doc.api_secret = frappe.generate_hash(length=15)
+            user_doc.save()
+            
+            return {
+            "status": 200,
+            "api_key": user_doc.api_key,
+            "api_secret": user_doc.get_password("api_secret")
+            }
 
-    return {"status": 401, "message": "Invalid login"}
+        return {"status": 401, "message": "Invalid login"}
 
 def set_token_daily():
     config = frappe.get_single("IAssist Support Configurations")
@@ -139,6 +141,7 @@ def sync_to_central_support_to_create(doc):
         create_url = f"{base_url}{endpoint_path}"
 
         payload = get_doc_payload(doctype, doc)
+        payload["raised_by"] = frappe.session.user
         payload["attachments"] = get_attachments_for_payload(doc)
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.doctype
@@ -165,7 +168,7 @@ def sync_to_central_support_to_create(doc):
             elif doctype == "IA Support Tickets":
                 frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
 
-            return {"message": "Issue synced successfully", "data": doc.name}
+            return {"message": "Issue raised successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
@@ -208,7 +211,7 @@ def sync_to_central_support_to_update(doc):
         if response_data.get("message", {}).get("status_code") == 200:
             frappe.db.set_value(doc.doctype, doc.name,"custom_sync_status", "Synced")
             frappe.db.set_value(doc.doctype, doc.name,"custom_last_sync",frappe.utils.now())
-            return {"message": "Issue synced successfully", "data": doc.name}
+            return {"message": "Issue updated successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.log_error(f"Central sync failed [{response.status_code}]",message =response.text)
@@ -404,3 +407,8 @@ def save_attachments_for_doc(doc, attachments):
 
     return saved_files
 
+def get_delete_update_url(doctype):
+    if not doctype:
+        return
+    url = "/api/method/icentral_support.icentral_support.api.issue.delete_remark_update"
+    return url

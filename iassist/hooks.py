@@ -141,12 +141,13 @@ doctype_js = {"Issue" : "public/custom_script/Issue/custom_issue.js",
 doc_events = {
    
     "Issue": {
-    #     "after_insert": "iassist.iassist.api.api.after_insert",
+        "on_trash": "iassist.iassist.api.delete.on_trash",
         "on_update": "iassist.iassist.api.api.on_update"
     },
     "HD Ticket": {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.api.api.on_update"
+        "on_update": "iassist.iassist.api.api.on_update",
+        "on_trash": "iassist.iassist.api.delete.on_trash",
     },
     "Comment":{
         "after_insert": "iassist.iassist.api.comment.sync_comment_to_icentral",
