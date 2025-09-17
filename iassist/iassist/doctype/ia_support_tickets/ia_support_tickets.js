@@ -64,7 +64,7 @@ frappe.ui.form.on("IA Support Tickets", {
                                     reqd: 1
                                 }
                             ],
-                            primary_action_label: 'Comment',
+                            primary_action_label: 'Delete Request',
                             primary_action(values) {
                                 
                             frappe.call({
