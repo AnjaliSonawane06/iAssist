@@ -20,6 +20,10 @@
   "priority",
   "issue_type",
   "custom_assigned_in_icentral",
+  "section_break_zehq",
+  "custom_requested_to_delete_ticket",
+  "custom_deleted_from_icentral_support",
+  "custom_delete_remark",
   "section_break_yamu",
   "description",
   "summary",
@@ -176,7 +180,8 @@
    "fieldname": "raised_by",
    "fieldtype": "Data",
    "label": "User ID",
-   "options": "Email"
+   "options": "Email",
+   "read_only": 1
   },
   {
    "fieldname": "feedback_tab",
@@ -202,12 +207,37 @@
    "fieldname": "project",
    "fieldtype": "Data",
    "label": "Project Name"
+  },
+  {
+   "fieldname": "section_break_zehq",
+   "fieldtype": "Section Break",
+   "label": "Icentral Support Delete track"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_deleted_from_icentral_support",
+   "fieldtype": "Check",
+   "label": "Deleted from Icentral Support",
+   "read_only": 1
+  },
+  {
+   "fieldname": "custom_delete_remark",
+   "fieldtype": "Long Text",
+   "label": "Delete Remark",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_requested_to_delete_ticket",
+   "fieldtype": "Check",
+   "label": " Requested to delete ticket",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-15 22:27:53.420796",
+ "modified": "2025-09-17 16:07:42.521647",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",

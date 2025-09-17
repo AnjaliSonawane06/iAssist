@@ -18,6 +18,8 @@ class IASupportTickets(Document):
 	def on_trash(self):
 		dot_series = f"IAT.-.#####"
 		revert_series_if_last(dot_series, self.name)
+		if self.central_ticket_id:
+			frappe.throw('For deleting this synced documents,You need to request on Icentral.Go to Actions -> Request For Deletion.')
 	
 	def on_update(self):
 		self.custom_sync_status = "Not Synced"
