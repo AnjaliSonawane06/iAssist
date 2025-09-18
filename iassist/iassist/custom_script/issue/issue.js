@@ -102,7 +102,17 @@ frappe.ui.form.on("Issue", {
                 }
             }
         });
-    }
+    },
+onload_post_render: function(frm) {
+        frm.fields_dict && Object.keys(frm.fields_dict).forEach(fieldname => {
+            frm.fields_dict[fieldname].df.onchange = () => {
+                console.log("-----------------.>",frm.fields_dict)
+                if (frm.doc.__unsaved) {
+                    frm.clear_custom_buttons();
+                }
+            };
+        });
+    },
 });
 
 
