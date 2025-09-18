@@ -43,8 +43,8 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Issue" : "public/custom_script/Issue/custom_issue.js",
-              "HD Ticket" : "public/custom_script/hd_ticket/custom_hd_ticket.js"}
+doctype_js = {"Issue" : "iassist/custom_script/issue/issue.js",
+              "HD Ticket" : "iassist/custom_script/hd_ticket/hd_ticket.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -141,17 +141,17 @@ doctype_js = {"Issue" : "public/custom_script/Issue/custom_issue.js",
 doc_events = {
    
     "Issue": {
-        "on_trash": "iassist.iassist.api.delete.on_trash",
-        "on_update": "iassist.iassist.api.api.on_update"
+        "on_trash": "iassist.iassist.custom_script.issue.issue.on_trash",
+        "on_update": "iassist.iassist.custom_script.issue.issue.on_update"
     },
     "HD Ticket": {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.api.api.on_update",
-        "on_trash": "iassist.iassist.api.delete.on_trash",
+        "on_update": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_update",
+        "on_trash": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_trash",
     },
     "Comment":{
-        "after_insert": "iassist.iassist.api.comment.sync_comment_to_icentral",
-        "on_update" : "iassist.iassist.api.comment.update_comment_in_icentral"
+        "after_insert": "iassist.iassist.custom_script.comment.comment.sync_comment_to_icentral",
+        "on_update" : "iassist.iassist.custom_script.comment.comment.update_comment_in_icentral"
     }
 	# "*": {
 	# 	"on_update": "method",

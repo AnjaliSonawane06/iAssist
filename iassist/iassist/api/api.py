@@ -54,57 +54,76 @@ def get_update_url(doctype):
 
 @frappe.whitelist(allow_guest=True)
 def generate_token(data=None):
-    data = frappe.request.get_json()
-
-    username = data.get("username")
-    password = data.get("password")
-    if frappe.db.exists("User",{'name':username},'name'):
-        login_url = f"{frappe.utils.get_url()}/api/method/login"
-        response = requests.post(login_url, data={"usr": username, "pwd": password})
-        if response.status_code == 200:
-            frappe.set_user(username)
-            user_doc = frappe.get_doc("User", username)
-            if not user_doc.api_key:
-                user_doc.api_key = frappe.generate_hash(length=15)
-            user_doc.api_secret = frappe.generate_hash(length=15)
-            user_doc.save()
-            
-            return {
-            "status": 200,
-            "api_key": user_doc.api_key,
-            "api_secret": user_doc.get_password("api_secret")
-            }
-
-        return {"status": 401, "message": "Invalid login"}
-
+    try:
+        if not data:
+            data = frappe.request.get_json()
+    except Exception:
+        return{"message": "Invalid JSON data provided."}
+    try:
+        username = data.get("username")
+        password = data.get("password")
+        if frappe.db.exists("User",{'name':username},'name'):
+            login_url = f"{frappe.utils.get_url()}/api/method/login"
+            response = requests.post(login_url, data={"usr": username, "pwd": password})
+            if response.status_code == 200:
+                frappe.set_user(username)
+                user_doc = frappe.get_doc("User", username)
+                if not user_doc.api_key:
+                    user_doc.api_key = frappe.generate_hash(length=15)
+                user_doc.api_secret = frappe.generate_hash(length=15)
+                user_doc.save(ignore_permissions = True)
+                return {
+                "status_code": 200,
+                "api_key": user_doc.api_key,
+                "api_secret": user_doc.get_password("api_secret")
+                }
+            else:
+                return {"status_code": 401, "message": "Invalid login"}
+        else:
+            return{"status_code":404,"message":"User does not exist"}
+    except Exception as e:
+        frappe.log_error(title="Generate Token Failed",message=str(e))
+        return str(e)
+    
 def set_token_daily():
-    config = frappe.get_single("IAssist Support Configurations")
-    if not config.is_active:
-        return
-    base_url = config.central_support_url.rstrip("/")
-    token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
-    
-    if config.is_multiple_users:
-        for user_row in config.ics_multi_user_details:
-            data_login = {"username": user_row.username, "password": user_row.get_password("password")}
+    try:
+        config = frappe.get_single("IAssist Support Configurations")
+        if not config.is_active:
+            return
+        base_url = config.central_support_url.rstrip("/")
+        token_url = f"{base_url}/api/method/icentral_support.icentral_support.api.issue.generate_token"
+        
+        if config.is_multiple_users:
+            for user_row in config.ics_multi_user_details:
+                data_login = {"username": user_row.username, "password": user_row.get_password("password")}
+                auth_response = requests.post(token_url, json=data_login) 
+        
+                if auth_response.status_code == 200:
+                    auth_data = auth_response.json()
+                    api_key = auth_data["message"]["api_key"]
+                    api_secret = auth_data["message"]["api_secret"]
+                    user_row.api_key = api_key
+                    user_row.api_secret= api_secret
+                else:
+                    frappe.log_error(title="Generate Token failed",message="")
+                    return{"message":"Generate Token failed"}
+        else:
+            data_login = {"username": config.username, "password": config.get_password("password")}
             auth_response = requests.post(token_url, json=data_login) 
-    
-            if auth_response.status_code == 200:
-                auth_data = auth_response.json()
+            auth_data = auth_response.json()
+            if auth_data.get("message",{}).get("status_code",{}) == 200:
                 api_key = auth_data["message"]["api_key"]
                 api_secret = auth_data["message"]["api_secret"]
-                user_row.api_key = api_key
-                user_row.api_secret= api_secret
-    else:
-        data_login = {"username": config.username, "password": config.get_password("password")}
-        auth_response = requests.post(token_url, json=data_login) 
-        if auth_response.status_code == 200:
-            auth_data = auth_response.json()
-            api_key = auth_data["message"]["api_key"]
-            api_secret = auth_data["message"]["api_secret"]
-            config.api_key = api_key
-            config.api_secret = api_secret
-    config.save()
+                config.api_key = api_key
+                config.api_secret = api_secret
+            else:
+                frappe.log_error(title="Generate Token failed",message="")
+                return{"message":"Generate Token Failed"}
+        config.save()
+        return{"message":"Token generated successfully"}
+    except Exception as e:
+        frappe.log_error(title="Generate token failed",message=str(e))
+        return str(e)
 
 def get_updated_payload(doc):
     changed_fields = get_common_fields(doc)
@@ -277,9 +296,6 @@ def get_allowed_user():
             is_allowed_user = 1
     return is_allowed_user
 
-
-def on_update(doc,method):
-    frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
 
 def get_common_fields(doc):
     if not doc:

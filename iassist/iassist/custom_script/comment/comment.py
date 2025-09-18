@@ -17,7 +17,7 @@ def sync_comment_to_icentral(doc, method):
             return
 
         base_url = config.central_support_url.rstrip("/")
-        endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.api.comment.create_comment_in_icentral"
+        endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.custom_script.comment.comment.create_comment_in_icentral"
 
         reference_name = None
         if doc.reference_doctype == "IA Support Tickets":
@@ -65,7 +65,7 @@ def update_comment_in_icentral(doc,method):
 
         base_url = config.central_support_url.rstrip("/")
         doctype = doc.doctype
-        endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.api.comment.update_comment_in_icentral"
+        endpoint_path = f"{base_url}/api/method/icentral_support.icentral_support.custom_script.comment.comment.update_comment_in_icentral"
         payload = {"name":doc.custom_ic_comment_id, "content":doc.content}
 
         if not endpoint_path:

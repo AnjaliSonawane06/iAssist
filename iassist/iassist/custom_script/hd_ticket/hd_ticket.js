@@ -4,6 +4,9 @@ frappe.ui.form.on("HD Ticket", {
             method: "iassist.iassist.api.api.get_allowed_user",
             args: { doctype: "IAssist Support Configurations" },
             callback: function(r) {
+                if (frm.is_new() || frm.is_dirty()) {
+                     frm.remove_custom_button(__('Request For Deletion'));
+                } else {}
                 if (r.message && r.message == 1 && !frm.doc.custom_deleted_from_icentral_support && !frm.doc.__islocal) {
                     
                     if (!frm.doc.custom_master_ticket_id) {
