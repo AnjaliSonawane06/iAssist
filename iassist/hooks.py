@@ -150,8 +150,8 @@ doc_events = {
         "on_trash": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_trash",
     },
     "Comment":{
-        "after_insert": "iassist.iassist.custom_script.comment.comment.sync_comment_to_icentral",
-        "on_update" : "iassist.iassist.custom_script.comment.comment.update_comment_in_icentral"
+        "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",
+        "on_update" : "iassist.iassist.custom_script.comment.comment.on_update"
     }
 	# "*": {
 	# 	"on_update": "method",

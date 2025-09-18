@@ -181,7 +181,10 @@ def create_comment_in_iassist(data=None):
     comment_doc.flags.ignore_sync = True
     comment_doc.save()
     return {"status_code": 200, "data": {"name": comment_doc.name}}
+
+def after_insert(doc,method):
+    return sync_comment_to_icentral(doc, method)
     
-    
-    
+def on_update(doc,method):
+    return update_comment_in_icentral(doc,method)
     
