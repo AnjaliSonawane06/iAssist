@@ -6,14 +6,6 @@ import requests
 from frappe.utils.password import get_decrypted_password
 from iassist.iassist.api.api import *
 
-
-def on_trash(doc,method):
-    warning = 'For deleting this synced documents,You need to request on Icentral.Go to Actions -> Request For Deletion. '
-    if doc.doctype == "Issue" and doc.custom_master_ic_id:
-        frappe.throw(warning)
-            
-    if doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
-        frappe.throw(warning)
            
 @frappe.whitelist()
 def delete_request_icentral(doctype,docname):
@@ -80,7 +72,8 @@ def sync_delete_remark(doc):
             frappe.db.set_value(doc.doctype, doc.name, {
                     "custom_sync_status": "Synced",
                     'custom_requested_to_delete_ticket':1,
-                    "custom_last_sync": frappe.utils.now()
+                    "custom_last_sync": frappe.utils.now(),
+                    "custom_delete_remark":f"{doc.name} has been requested to delete from Icentral Support"
                 })
             return "Deletion request acknowledged successfully."
         else:

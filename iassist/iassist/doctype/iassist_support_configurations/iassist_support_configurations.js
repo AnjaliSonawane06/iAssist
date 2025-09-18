@@ -13,7 +13,7 @@ frappe.ui.form.on("IAssist Support Configurations", {
 						let message = (typeof res.message === "string") 
 							? res.message 
 							: JSON.stringify(res.message);
-						frappe.msgprint("Token generated successfully");
+						frappe.msgprint(message);
 						frm.reload_doc();
                     } else {
                         frappe.msgprint({
