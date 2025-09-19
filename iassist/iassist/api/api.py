@@ -109,9 +109,9 @@ def set_token_daily():
                     return{"message":"Generate Token failed"}
         else:
             data_login = {"username": config.username, "password": config.get_password("password")}
-            auth_response = requests.post(token_url, json=data_login) 
+            auth_response = requests.post(token_url, json=data_login)
             auth_data = auth_response.json()
-            if auth_data.get("message",{}).get("status_code",{}) == 200:
+            if auth_response.status_code == 200 :
                 api_key = auth_data["message"]["api_key"]
                 api_secret = auth_data["message"]["api_secret"]
                 config.api_key = api_key
@@ -145,7 +145,10 @@ def sync_to_central_support_to_create(doc):
         if get_configurations(doc):
             headers = get_configurations(doc)
         else:
-            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+            frappe.db.set_value(doc.doctype,doc.name,{
+                    "custom_sync_status": "Not Synced",
+                    "custom_last_sync": frappe.utils.now()
+            })
             frappe.msgprint("Central sync failed : User is not available in configurations")
             frappe.log_error("Central sync failed : User is not available in configurations")
  
@@ -165,11 +168,15 @@ def sync_to_central_support_to_create(doc):
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.doctype
         payload["custom_sync_status"] = "Synced"
+        payload["custom_last_sync"] = frappe.utils.now()
         response = requests.post(create_url, json=payload, headers=headers)
         response_data = response.json()
-        doc.custom_last_sync = frappe.utils.now()
 
         if response.status_code == 401 or response.status_code == 403:
+            frappe.db.set_value(doc.doctype,doc.name,{
+                    "custom_sync_status": "Not Synced",
+                    "custom_last_sync": frappe.utils.now()
+            })
             return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
 
         if response_data.get("message", {}).get("status_code") == 200:
@@ -205,7 +212,10 @@ def sync_to_central_support_to_update(doc):
         if get_configurations(doc):
             headers = get_configurations(doc)
         else:
-            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+            frappe.db.set_value(doc.doctype,doc.name,{
+                    "custom_sync_status": "Not Synced",
+                    "custom_last_sync": frappe.utils.now()
+            })            
             frappe.msgprint("Central sync failed : User is not available in configurations")
             frappe.log_error("Central sync failed : User is not available in configurations")
             return{"message:Central sync failed : User is not available in configurations"}
@@ -222,10 +232,15 @@ def sync_to_central_support_to_update(doc):
         payload["custom_url"] = frappe.utils.get_url()
         payload["custom_referred_doctype"] = doc.custom_referred_doctype
         payload["custom_sync_status"] = "Synced"
-      
+        payload["custom_last_sync"] = frappe.utils.now()
+
         response = requests.post(update_url, json=payload, headers=headers)
         response_data = response.json()
         if response.status_code == 401 or response.status_code == 403:
+            frappe.db.set_value(doc.doctype,doc.name,{
+                    "custom_sync_status": "Not Synced",
+                    "custom_last_sync": frappe.utils.now()
+            })
             return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
         if response_data.get("message", {}).get("status_code") == 200:
             frappe.db.set_value(doc.doctype, doc.name,"custom_sync_status", "Synced")
@@ -283,16 +298,16 @@ def sync_to_update(docname, doctype):
     return sync_to_central_support_to_update(doc)
 
 @frappe.whitelist()
-def get_allowed_user():
+def get_allowed_user(doctype):
     config = frappe.get_single("IAssist Support Configurations")
     is_allowed_user = 0
     if config.is_multiple_users:
         for user_row in config.ics_multi_user_details:
-            if frappe.session.user == user_row.username:
+            if frappe.session.user == user_row.username and config.doctype_for_raising_ticket == doctype:
                 is_allowed_user = 1
                 break
     else:
-        if config.username == frappe.session.user:
+        if config.username == frappe.session.user and config.doctype_for_raising_ticket == doctype:
             is_allowed_user = 1
     return is_allowed_user
 

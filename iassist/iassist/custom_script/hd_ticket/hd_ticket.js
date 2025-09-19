@@ -2,7 +2,7 @@ frappe.ui.form.on("HD Ticket", {
     refresh: function(frm) {
         frappe.call({
             method: "iassist.iassist.api.api.get_allowed_user",
-            args: { doctype: "IAssist Support Configurations" },
+            args: { doctype: frm.doc.doctype},
             callback: function(r) {
                 if (frm.is_new() || frm.is_dirty()) {
                      frm.remove_custom_button(__('Request For Deletion'));
