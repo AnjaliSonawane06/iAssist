@@ -75,7 +75,7 @@ def sync_delete_remark(doc):
                     "custom_last_sync": frappe.utils.now(),
                     "custom_delete_remark":f"{doc.name} has been requested to delete from Icentral Support"
                 })
-            return "Deletion request acknowledged successfully."
+            return {"status":"success","message":"Deletion request acknowledged successfully."}
         else:
 
             frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
