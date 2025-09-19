@@ -48,54 +48,65 @@ frappe.ui.form.on("Issue", {
                             });
                         },"Actions");
                      
-                        frm.add_custom_button("Request For Deletion", function() {
+            frm.add_custom_button("Request For Deletion", function() {
                
-                        let d = new frappe.ui.Dialog({
-                            title: 'Request for Deletion',
-                            fields: [
-                                {
-                                    fieldtype: 'Small Text',
-                                    fieldname: 'reason',
-                                    label: 'Reason for Deletion',
-                                    reqd: 1
-                                }
-                            ],
-                            primary_action_label: 'Delete Request',
-                            primary_action(values) {
-                                
-                            frappe.call({
-                                method: "frappe.desk.form.utils.add_comment",
-                                args: {
-                                    reference_doctype: frm.doc.doctype,
-                                    reference_name: frm.doc.name,
-                                    content: values.reason,   
-                                    comment_email: frappe.session.user,
-                                    comment_by: frappe.session.user_fullname
-                                },
-                                callback: function() {
-                                    
-                                    frappe.call({
-                                        method: "iassist.iassist.api.delete.delete_request_icentral",
-                                        args: {
-                                            doctype: frm.doc.doctype,
-                                            docname: frm.doc.name
-                                        },
-                                        callback: function(res) {
+            let d = new frappe.ui.Dialog({
+                title: 'Request for Deletion',
+                fields: [
+                    {
+                        fieldtype: 'Small Text',
+                        fieldname: 'reason',
+                        label: 'Reason for Deletion',
+                        reqd: 1
+                    }
+                ],
+                primary_action_label: 'Delete Request',
+                primary_action(values) {
+         
+                    frappe.call({
+                        method: "iassist.iassist.api.delete.delete_request_icentral",
+                        args: {
+                            doctype: frm.doc.doctype,
+                            docname: frm.doc.name
+                        },
+                        callback: function(r) {
+                                       
+                            if(r.message && r.message.status=="success"){
+                                frappe.call({
+                                    method: "frappe.desk.form.utils.add_comment",
+                                    args: {
+                                        reference_doctype: frm.doc.doctype,
+                                        reference_name: frm.doc.name,
+                                        content: values.reason,   
+                                        comment_email: frappe.session.user,
+                                        comment_by: frappe.session.user_fullname
+                                    },
+                                    callback: function(res) {
+                                        frappe.show_alert({
+                                            message: __("Comment and deletion remark updated successfully on Icentral"),
+                                            indicator: "green"
+                                        });
+                                        frm.reload_doc();
+                                        d.hide();
                                             
-                                            frappe.msgprint(res.message);
-                                            
-                                            frm.reload_doc();
                                         }
                                     });
+                            }else{
+                                frappe.show_alert({
+                                        message: __("Failed to acknowledge delete request on icentral."),
+                                        indicator: "red"
+                                        });
+                            
+                                }
                                 }
                             });
-                            frm.reload_doc();
-                            d.hide(); 
+                            
                             }
                         });
-                        frm.reload_doc();
+                       
                         d.show();
                     }, "Actions");
+                              
                 
 
                     }
@@ -106,7 +117,7 @@ frappe.ui.form.on("Issue", {
 onload_post_render: function(frm) {
         frm.fields_dict && Object.keys(frm.fields_dict).forEach(fieldname => {
             frm.fields_dict[fieldname].df.onchange = () => {
-                console.log("-----------------.>",frm.fields_dict)
+                
                 if (frm.doc.__unsaved) {
                     frm.clear_custom_buttons();
                 }
