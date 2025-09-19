@@ -5,7 +5,7 @@ frappe.ui.form.on("IA Support Tickets", {
 	refresh: function(frm) {
         frappe.call({
             method: "iassist.iassist.api.api.get_allowed_user",
-            args: { doctype: "IAssist Support Configurations" },
+            args: {doctype: frm.doc.doctype},
             callback: function(r) {
                 if (r.message && r.message == 1 && !frm.doc.custom_deleted_from_icentral_support && !frm.doc.__islocal) {
                     

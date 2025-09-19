@@ -64,11 +64,17 @@ def update_ticket(data=None):
                     else:
                         setattr(doc, key, None) 
                 else:
-                    setattr(doc, key, value)
-                    if key == "status":
-                        doc.db_set("status", value)   
+                    setattr(doc, key, value) 
         doc.save()
-        
+        status_value = valid_fields.get('status')
+        if status_value:
+            try:
+                doc.db_set("status", status_value)
+            except Exception as e:
+                frappe.log_error(
+                    title=f"Status update failed for {refer_doctype} {docname}",
+                    message=str(e)
+                )
         doc.db_set("custom_sync_status", "Synced")
         if assigned_users != "not_provided": 
             if not assigned_users: 
