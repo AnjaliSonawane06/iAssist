@@ -25,6 +25,8 @@ frappe.ui.form.on("HD Ticket", {
 
                                         frappe.msgprint(message);
                                         frm.reload_doc();
+                                    }else{
+                                        frappe.msgprint("Failed to raise ticket on Icentral Support")
                                     }
                                 }
                             });
@@ -46,6 +48,8 @@ frappe.ui.form.on("HD Ticket", {
 
                                         frappe.msgprint(message);
                                         frm.reload_doc();
+                                    }else{
+                                        frappe.msgprint("Failed to update ticket on Icentral Support")
                                     }
                                 }
                             });
