@@ -1,5 +1,8 @@
-frappe.ui.form.on("HD Ticket", {
+frappe.ui.form.on("HD Ticket", { 
     refresh: function(frm) {
+
+        assigned_to(frm)
+
         frappe.call({
             method: "iassist.iassist.api.api.get_allowed_user",
             args: { doctype: frm.doc.doctype},
@@ -53,7 +56,7 @@ frappe.ui.form.on("HD Ticket", {
                                     }
                                 }
                             });
-                        },"Actions");
+                        });
 
 
             frm.add_custom_button("Request For Deletion", function() {
@@ -132,3 +135,14 @@ onload_post_render: function(frm) {
         });
     },
 });
+
+function assigned_to(frm){
+    if(frm.doc.custom_assigned_in_icentral){
+        $("div").remove(".form-dashboard-section.custom");
+
+        frm.dashboard.add_section(frm.doc.custom_assigned_in_icentral,
+            __("Assigned To") 
+        );
+
+        frm.dashboard.show();
+}}

@@ -100,14 +100,32 @@ def build_assigned_users_table(assigned_users):
 
     if not assigned_users:
         return "" 
-
-    rows = "".join(f"<tr><td>{i+1}</td><td>{user}</td></tr>" for i, user in enumerate(assigned_users))
     
-    table_html = (
-        '<table class="table table-bordered small">'
-        '<thead><tr><th>Sr No</th><th>Assigned To</th></tr></thead>'
-        f'<tbody>{rows}</tbody>'
-        '</table>'
-    )
+    rows = ""
+    for i ,user in enumerate(assigned_users):
     
+        rows += f"""<tr>
+                <td>{i+1}</td>
+                <td>{user.get('assigned_to')}</td>
+                <td>{user.get('email')}</td>
+                <td>{user.get('time')}</td>
+                </tr>
+                """
+       
+    table_html = f"""
+        <table class="table table-bordered small">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Assigned To</th>
+                    <th>Email</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    """
+        
     return table_html

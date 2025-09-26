@@ -163,6 +163,7 @@
   {
    "fieldname": "custom_assigned_in_icentral",
    "fieldtype": "Text Editor",
+   "hidden": 1,
    "label": "Assigned In Icentral",
    "read_only": 1
   },
