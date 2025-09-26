@@ -59,9 +59,8 @@ def update_comment_in_icentral(doc,method):
         if not (doc.reference_doctype == "Issue" or doc.reference_doctype == "IA Support Tickets" or doc.reference_doctype == "HD Ticket"):
             return
         config = frappe.get_single("IAssist Support Configurations")
-        if get_configurations(doc):
-            headers = get_configurations(doc)
-        else:
+        headers = get_configurations(doc)
+        if not headers:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.msgprint("Central sync failed : User is not available in configurations")
             frappe.log_error(title="Central sync failed : User is not available in configurations")
