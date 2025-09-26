@@ -130,9 +130,9 @@ doctype_js = {"Issue" : "iassist/custom_script/issue/issue.js",
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Comment": "iassist.iassist.custom_script.comment.comment.CustomComment"
+}
 
 # Document Events
 # ---------------
@@ -149,10 +149,10 @@ doc_events = {
         "on_update": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_update",
         "on_trash": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_trash",
     },
-    "Comment":{
-        "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",
-        "on_update" : "iassist.iassist.custom_script.comment.comment.on_update"
-    }
+    # "Comment":{
+    #     "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",
+    #     "on_update" : "iassist.iassist.custom_script.comment.comment.on_update"
+    # }
 	# "*": {
 	# 	"on_update": "method",
 	# 	"on_cancel": "method",

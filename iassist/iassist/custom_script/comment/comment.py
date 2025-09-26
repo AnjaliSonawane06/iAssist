@@ -2,6 +2,9 @@ import frappe
 from iassist.iassist.api.api import *
 import requests
 import json
+from frappe.core.doctype.comment.comment import Comment as FrappeComment
+from frappe.desk.notifications import notify_mentions
+from frappe.core.doctype.comment.comment import update_comment_in_doc
 
 def sync_comment_to_icentral(doc, method):
     try:
@@ -35,7 +38,7 @@ def sync_comment_to_icentral(doc, method):
         payload["reference_doctype"] = referred_doctype
         payload["reference_name"] = reference_name
         payload["custom_ia_comment_id"] = doc.name
-        payload["custom_comment_from_iassist"] = 1
+        payload["custom_comment_sync_from_iassist"] = 1
         payload["custom_ia_comment_id"] = doc.name
 
         response = requests.post(endpoint_path, json=payload, headers=headers)
@@ -182,9 +185,29 @@ def create_comment_in_iassist(data=None):
     comment_doc.save()
     return {"status_code": 200, "data": {"name": comment_doc.name}}
 
-def after_insert(doc,method):
-    return sync_comment_to_icentral(doc, method)
+# def after_insert(doc,method):
+#     return sync_comment_to_icentral(doc, method)
     
-def on_update(doc,method):
-    return update_comment_in_icentral(doc,method)
+# def on_update(doc,method):
+#     return update_comment_in_icentral(doc,method)
     
+class CustomComment(FrappeComment):
+    def after_insert(self):
+        """
+        Override the core Comment's after_insert method.
+        Example: sync with external system only if a checkbox is not checked.
+        """
+        if self.custom_comment_from_icentral == 1:
+            return None
+        else:
+            notify_mentions(self.reference_doctype, self.reference_name, self.content)
+            self.notify_change("add")
+            doc= frappe.get_doc("Comment", self.name)
+            return sync_comment_to_icentral(doc,method=None)
+       
+    def on_update(self):
+        update_comment_in_doc(self)
+        if not self.is_new():
+            self.notify_change("update")
+        doc= frappe.get_doc("Comment", self.name)
+        return update_comment_in_icentral(doc,method=None)
