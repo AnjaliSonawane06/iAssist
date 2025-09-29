@@ -199,14 +199,11 @@ class CustomComment(FrappeComment):
         if self.custom_comment_from_icentral == 1:
             return None
         else:
-            notify_mentions(self.reference_doctype, self.reference_name, self.content)
-            self.notify_change("add")
+            super(CustomComment, self).after_insert()
             doc= frappe.get_doc("Comment", self.name)
             return sync_comment_to_icentral(doc,method=None)
        
     def on_update(self):
-        update_comment_in_doc(self)
-        if not self.is_new():
-            self.notify_change("update")
+        super(CustomComment,self).on_update()
         doc= frappe.get_doc("Comment", self.name)
         return update_comment_in_icentral(doc,method=None)
