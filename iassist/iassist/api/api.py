@@ -68,10 +68,11 @@ def generate_token(data=None):
             if response.status_code == 200:
                 frappe.set_user(username)
                 user_doc = frappe.get_doc("User", username)
+                user_doc.reload()
                 if not user_doc.api_key:
                     user_doc.api_key = frappe.generate_hash(length=15)
                 user_doc.api_secret = frappe.generate_hash(length=15)
-                user_doc.save(ignore_permissions = True)
+                user_doc.save(ignore_permissions = True,ignore_version=True)
                 return {
                 "status_code": 200,
                 "api_key": user_doc.api_key,
