@@ -39,7 +39,15 @@
   "feedback_tab",
   "feedback_rating",
   "feedback",
-  "feedback_extra"
+  "feedback_extra",
+  "payments_tab",
+  "functional_efforts",
+  "customisation_efforts",
+  "efforts_consumed",
+  "issuecr_closing_date",
+  "column_break_zymd",
+  "date_of_approval",
+  "approval_reference"
  ],
  "fields": [
   {
@@ -233,12 +241,60 @@
    "fieldtype": "Check",
    "label": " Requested to delete ticket",
    "read_only": 1
+  },
+  {
+   "fieldname": "payments_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payments"
+  },
+  {
+   "description": "In Hours",
+   "fieldname": "functional_efforts",
+   "fieldtype": "Float",
+   "label": "Functional Efforts",
+   "read_only": 1
+  },
+  {
+   "description": "In Hours",
+   "fieldname": "customisation_efforts",
+   "fieldtype": "Float",
+   "label": "Customisation Efforts",
+   "read_only": 1
+  },
+  {
+   "description": "In Hours",
+   "fieldname": "efforts_consumed",
+   "fieldtype": "Float",
+   "label": "Efforts Consumed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "issuecr_closing_date",
+   "fieldtype": "Date",
+   "label": "Issue/CR Closing Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_zymd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_of_approval",
+   "fieldtype": "Date",
+   "label": "Date of Approval",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_reference",
+   "fieldtype": "Data",
+   "label": "Approval Reference",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-17 16:07:42.521647",
+ "modified": "2025-10-31 18:49:36.754706",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
