@@ -14,7 +14,7 @@ def get_doc_payload(doctype, doc):
     meta = get_meta(doctype)
     valid_fieldnames = [df.fieldname for df in meta.fields] + ["name", "doctype"]
     
-    exclude_fields = {"contact", "company"}  
+    exclude_fields = {"contact", "company","custom_status_wise_activity_table"}  
     valid_fieldnames = [field for field in valid_fieldnames if field not in exclude_fields]
 
     doc_dict = doc if isinstance(doc, dict) else doc.as_dict()

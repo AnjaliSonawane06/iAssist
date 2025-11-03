@@ -41,13 +41,16 @@
   "feedback",
   "feedback_extra",
   "payments_tab",
-  "functional_efforts",
-  "customisation_efforts",
-  "efforts_consumed",
-  "issuecr_closing_date",
+  "custom_functional_efforts",
+  "custom_customisation_efforts",
+  "custom_efforts_consumed",
+  "custom_issuecr_closing_date",
   "column_break_zymd",
-  "date_of_approval",
-  "approval_reference"
+  "custom_date_of_approval",
+  "custom_approval_reference",
+  "custom_cost_incurred",
+  "status_wise_activity_table_tab",
+  "custom_status_wise_activity_table"
  ],
  "fields": [
   {
@@ -248,46 +251,64 @@
    "label": "Payments"
   },
   {
+   "fieldname": "column_break_zymd",
+   "fieldtype": "Column Break"
+  },
+  {
    "description": "In Hours",
-   "fieldname": "functional_efforts",
+   "fieldname": "custom_functional_efforts",
    "fieldtype": "Float",
    "label": "Functional Efforts",
    "read_only": 1
   },
   {
    "description": "In Hours",
-   "fieldname": "customisation_efforts",
+   "fieldname": "custom_customisation_efforts",
    "fieldtype": "Float",
    "label": "Customisation Efforts",
    "read_only": 1
   },
   {
    "description": "In Hours",
-   "fieldname": "efforts_consumed",
+   "fieldname": "custom_efforts_consumed",
    "fieldtype": "Float",
    "label": "Efforts Consumed",
    "read_only": 1
   },
   {
-   "fieldname": "issuecr_closing_date",
+   "fieldname": "custom_issuecr_closing_date",
    "fieldtype": "Date",
    "label": "Issue/CR Closing Date",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_zymd",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "date_of_approval",
+   "fieldname": "custom_date_of_approval",
    "fieldtype": "Date",
    "label": "Date of Approval",
    "read_only": 1
   },
   {
-   "fieldname": "approval_reference",
+   "fieldname": "custom_approval_reference",
    "fieldtype": "Data",
    "label": "Approval Reference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "custom_cost_incurred",
+   "fieldtype": "Currency",
+   "label": "Cost Incurred",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status_wise_activity_table_tab",
+   "fieldtype": "Tab Break",
+   "label": "Status Wise Activity Table"
+  },
+  {
+   "fieldname": "custom_status_wise_activity_table",
+   "fieldtype": "Table",
+   "label": "Status Wise Activity Table",
+   "options": "Status Wise Activity Table",
    "read_only": 1
   }
  ],
