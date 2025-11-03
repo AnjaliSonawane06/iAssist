@@ -148,6 +148,8 @@ doc_events = {
     #     "after_insert": "iassist.iassist.api.api.after_insert",
         "on_update": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_update",
         "on_trash": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_trash",
+        "validate":"iassist.iassist.custom_script.hd_ticket.hd_ticket.validate"
+        
     },
     # "Comment":{
     #     "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",

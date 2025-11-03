@@ -2,6 +2,8 @@ import frappe
 import json
 from frappe import _
 from iassist.iassist.api.api import *
+from datetime import datetime
+
 
 
 @frappe.whitelist()
@@ -65,6 +67,22 @@ def update_ticket(data=None):
                         setattr(doc, key, None) 
                 else:
                     setattr(doc, key, value) 
+
+        sla_field_mapping = {
+            "sla": "custom_sla_info",
+            "agreement_status": "custom_sla_status",
+            "resolution_by": "custom_resolution_by_info",
+            "service_level_agreement_creation": "custom_sla_creation",
+            "response_by": "custom_response_by_info",
+            "on_hold_since": "custom_on_hold_since_info",
+            "total_hold_time": "custom_total_hold_time_info"
+        }
+        for src, target in sla_field_mapping.items():
+            value = data.get(src)
+            if value is not None:
+                parsed_value = parse_datetime_or_duration(src, value)
+                setattr(doc, target, parsed_value)
+
         doc.save()
         status_value = valid_fields.get('status')
         if status_value:
@@ -96,6 +114,37 @@ def update_ticket(data=None):
             "message": f"Error updating document on IAssist {str(e)}",
             "data": {}
         }
+    
+
+def parse_datetime_or_duration(fieldname, value):
+    """Convert string values into datetime/date or rounded durations."""
+    if not value:
+        return None
+
+    if isinstance(value, str) and "T" in value:
+        try:
+            dt = datetime.fromisoformat(value)
+            rounded = dt.replace(microsecond=0)
+            return rounded
+        except Exception:
+            pass
+   
+    if isinstance(value, str):
+        try:
+            return datetime.strptime(value, "%Y-%m-%d")
+        except Exception:
+            pass
+
+    if fieldname == "total_hold_time":
+        try:
+            seconds = float(value)
+            minutes = round(seconds / 60, 2)
+            return minutes  
+        except Exception:
+            pass
+
+    return value
+
 def build_assigned_users_table(assigned_users):
 
     if not assigned_users:
