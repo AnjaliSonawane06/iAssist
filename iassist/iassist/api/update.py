@@ -38,6 +38,7 @@ def update_ticket(data=None):
     # refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
     valid_fields = map_valid_fields(refer_doctype, data)
     docname = valid_fields.get("name")
+    custom_sla_status = data.pop("agreement_status","")
     attachments = data.pop("attachments",[])
     if not docname:
         return {
@@ -56,6 +57,7 @@ def update_ticket(data=None):
     try:
         doc = frappe.get_doc(refer_doctype, docname)
         valid_fields.pop('custom_referred_doctype')
+        valid_fields.pop("agreement_status")
         assigned_users = data.get("assignees_list", "not_provided")
         for key, value in valid_fields.items():
             if key != 'name':
@@ -68,20 +70,20 @@ def update_ticket(data=None):
                 else:
                     setattr(doc, key, value) 
 
-        sla_field_mapping = {
-            "sla": "custom_sla_info",
-            "agreement_status": "custom_sla_status",
-            "resolution_by": "custom_resolution_by_info",
-            "service_level_agreement_creation": "custom_sla_creation",
-            "response_by": "custom_response_by_info",
-            "on_hold_since": "custom_on_hold_since_info",
-            "total_hold_time": "custom_total_hold_time_info"
-        }
-        for src, target in sla_field_mapping.items():
-            value = data.get(src)
-            if value is not None:
-                parsed_value = parse_datetime_or_duration(src, value)
-                setattr(doc, target, parsed_value)
+        # sla_field_mapping = {
+        #     "sla": "custom_sla_info",
+        #     "agreement_status": "custom_sla_status",
+        #     "resolution_by": "custom_resolution_by_info",
+        #     "service_level_agreement_creation": "custom_sla_creation",
+        #     "response_by": "custom_response_by_info",
+        #     "on_hold_since": "custom_on_hold_since_info",
+        #     "total_hold_time": "custom_total_hold_time_info"
+        # }
+        # for src, target in sla_field_mapping.items():
+        #     value = data.get(src)
+        #     if value is not None:
+        #         parsed_value = parse_datetime_or_duration(src, value)
+        #         setattr(doc, target, parsed_value)
 
         doc.save()
         status_value = valid_fields.get('status')
@@ -93,6 +95,7 @@ def update_ticket(data=None):
                     title=f"Status update failed for {refer_doctype} {docname}",
                     message=str(e)
                 )
+        doc.db_set("custom_sla_status",custom_sla_status)
         doc.db_set("custom_sync_status", "Synced")
         if assigned_users != "not_provided": 
             if not assigned_users: 
