@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("IA Support Tickets", {
 	refresh: function(frm) {
-
+        set_intro_not_synced(frm)
         assigned_to(frm)
 
         frappe.call({
@@ -146,3 +146,14 @@ function assigned_to(frm){
 
         frm.dashboard.show();
 }}
+
+function set_intro_not_synced(frm){
+    if(frm.doc.custom_sync_status=="Not Synced"){
+        frm.set_intro("This ticket has not been synced yet."); 
+    }else{
+        frm.set_intro("");
+    }
+}
+
+
+
