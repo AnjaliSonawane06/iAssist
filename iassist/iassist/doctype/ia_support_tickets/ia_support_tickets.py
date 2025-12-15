@@ -7,6 +7,7 @@ from frappe.model.naming import make_autoname,revert_series_if_last
 
 class IASupportTickets(Document):
 	def validate(self):
+		self.set_default_sla()
 		self.raised_by = frappe.session.user
 		if self.raised_by:
 			self.full_name = frappe.db.get_value("User",{'name':self.raised_by},fieldname=['full_name'])
@@ -23,3 +24,9 @@ class IASupportTickets(Document):
 	
 	def on_update(self):
 		self.custom_sync_status = "Not Synced"
+
+	def set_default_sla(self):
+		sla = frappe.db.get_value("Service Level Agreement",{'custom_iassist_sla':1,'default_service_level_agreement':1},fieldname=['name'])
+		if not sla:
+			return
+		self.service_level_agreement = sla

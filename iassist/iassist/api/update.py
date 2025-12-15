@@ -57,7 +57,8 @@ def update_ticket(data=None):
     try:
         doc = frappe.get_doc(refer_doctype, docname)
         valid_fields.pop('custom_referred_doctype')
-        valid_fields.pop("agreement_status")
+        # resolution_date= valid_fields.pop("resolution_time")
+        # valid_fields.pop("agreement_status")
         assigned_users = data.get("assignees_list", "not_provided")
         for key, value in valid_fields.items():
             if key != 'name':
@@ -69,6 +70,8 @@ def update_ticket(data=None):
                         setattr(doc, key, None) 
                 else:
                     setattr(doc, key, value) 
+                if key == "resolution_time":
+                    doc.db_set(key,value)
 
         # sla_field_mapping = {
         #     "sla": "custom_sla_info",
@@ -96,6 +99,7 @@ def update_ticket(data=None):
                     message=str(e)
                 )
         doc.db_set("custom_sla_status",custom_sla_status)
+        # doc.db_set("resolution_date",resolution_date)
         doc.db_set("custom_sync_status", "Synced")
         if assigned_users != "not_provided": 
             if not assigned_users: 
