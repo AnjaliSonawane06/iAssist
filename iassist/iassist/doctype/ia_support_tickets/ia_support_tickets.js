@@ -10,7 +10,7 @@ frappe.ui.form.on("IA Support Tickets", {
             method: "iassist.iassist.api.api.get_allowed_user",
             args: {doctype: frm.doc.doctype},
             callback: function(r) {
-                if (r.message && r.message == 1 && !frm.doc.custom_deleted_from_icentral_support && !frm.doc.__islocal) {
+                if (r.message && r.message == 1 && !frm.doc.custom_deleted_from_icentral_support && !frm.doc.custom_requested_to_delete_ticket && !frm.doc.__islocal) {
                     
                     if (!frm.doc.central_ticket_id) {
                         frm.add_custom_button("Raise Ticket", function () {
@@ -148,12 +148,17 @@ function assigned_to(frm){
 }}
 
 function set_intro_not_synced(frm){
-    if(frm.doc.custom_sync_status=="Not Synced"){
-        frm.set_intro("This ticket has not been synced yet."); 
-    }else{
-        frm.set_intro("");
+    let messages = [];
+    if (frm.doc.custom_sync_status === "Not Synced") {
+        messages.push("This ticket has not been synced yet.");
     }
+    if (frm.doc.custom_requested_to_delete_ticket == 1) {
+        messages.push("A deletion request has been raised for this ticket. You can proceed to delete it.");
+    }
+    if (frm.doc.custom_deleted_from_icentral_support == 1) {
+        messages.push("This ticket has been deleted from ICentral Support.");
+    }
+    frm.set_intro(messages.join("<br>"));
 }
-
 
 
