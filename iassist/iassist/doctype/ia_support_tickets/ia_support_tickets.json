@@ -17,7 +17,6 @@
   "column_break_gesv",
   "raised_by",
   "full_name",
-  "priority",
   "issue_type",
   "custom_assigned_in_icentral",
   "section_break_zehq",
@@ -35,6 +34,7 @@
   "subscription_status",
   "expected_start_date",
   "expected_end_date",
+  "custom_sla_status",
   "resolution_tab",
   "resolution_details",
   "column_break_qktr",
@@ -54,19 +54,12 @@
   "custom_payment_status",
   "status_wise_activity_table_tab",
   "custom_status_wise_activity_table",
-  "sla_tab",
-  "service_level_agreement",
-  "response_by",
-  "column_break_btui",
-  "custom_sla_status",
-  "sla_resolution_by",
-  "service_level_agreement_creation",
-  "on_hold_since",
-  "total_hold_time",
   "feedback_tab",
   "feedback_rating",
   "feedback",
-  "feedback_extra"
+  "feedback_extra",
+  "sla_tab",
+  "service_level_agreement"
  ],
  "fields": [
   {
@@ -123,12 +116,6 @@
    "fieldname": "actual_end_date",
    "fieldtype": "Data",
    "label": "Actual End Date"
-  },
-  {
-   "fieldname": "priority",
-   "fieldtype": "Select",
-   "label": "Priority",
-   "options": "\nLow\nMedium\nHigh\nCritical"
   },
   {
    "fieldname": "issue_type",
@@ -325,56 +312,10 @@
    "read_only": 1
   },
   {
-   "fieldname": "sla_tab",
-   "fieldtype": "Tab Break",
-   "label": "SLA"
-  },
-  {
-   "fieldname": "service_level_agreement",
-   "fieldtype": "Link",
-   "label": "Service Level Agreement",
-   "options": "Service Level Agreement",
-   "read_only": 1
-  },
-  {
-   "fieldname": "response_by",
-   "fieldtype": "Datetime",
-   "label": "Response By",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_btui",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "custom_sla_status",
    "fieldtype": "Select",
    "label": "SLA Status",
    "options": "\nFirst Response Due\nResolution Due\nFailed\nFulfilled\nPaused",
-   "read_only": 1
-  },
-  {
-   "fieldname": "sla_resolution_by",
-   "fieldtype": "Datetime",
-   "label": "Resolution By",
-   "read_only": 1
-  },
-  {
-   "fieldname": "service_level_agreement_creation",
-   "fieldtype": "Datetime",
-   "label": "Service Level Agreement Creation",
-   "read_only": 1
-  },
-  {
-   "fieldname": "on_hold_since",
-   "fieldtype": "Datetime",
-   "label": "On Hold Since",
-   "read_only": 1
-  },
-  {
-   "fieldname": "total_hold_time",
-   "fieldtype": "Duration",
-   "label": "Total Hold Time",
    "read_only": 1
   },
   {
@@ -419,12 +360,23 @@
    "fieldtype": "Duration",
    "label": "Resolution Time",
    "read_only": 1
+  },
+  {
+   "fieldname": "sla_tab",
+   "fieldtype": "Tab Break",
+   "label": "SLA"
+  },
+  {
+   "fieldname": "service_level_agreement",
+   "fieldtype": "Link",
+   "label": "Service Level Agreement",
+   "options": "Service Level Agreement"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-13 14:00:56.503047",
+ "modified": "2025-12-16 00:21:20.153977",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
