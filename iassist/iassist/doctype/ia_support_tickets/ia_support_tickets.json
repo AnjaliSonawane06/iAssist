@@ -58,8 +58,7 @@
   "feedback_rating",
   "feedback",
   "feedback_extra",
-  "sla_tab",
-  "service_level_agreement"
+  "sla_tab"
  ],
  "fields": [
   {
@@ -365,18 +364,12 @@
    "fieldname": "sla_tab",
    "fieldtype": "Tab Break",
    "label": "SLA"
-  },
-  {
-   "fieldname": "service_level_agreement",
-   "fieldtype": "Link",
-   "label": "Service Level Agreement",
-   "options": "Service Level Agreement"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-16 00:21:20.153977",
+ "modified": "2025-12-16 10:51:32.258412",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
