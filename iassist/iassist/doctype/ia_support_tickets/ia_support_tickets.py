@@ -4,10 +4,14 @@
 import frappe
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname,revert_series_if_last
+from frappe.utils import now
+
 
 class IASupportTickets(Document):
 	def validate(self):
-		# self.set_default_sla()
+		status_wise_activity_table(self)
+
+	def before_insert(self):
 		self.raised_by = frappe.session.user
 		if self.raised_by:
 			self.full_name = frappe.db.get_value("User",{'name':self.raised_by},fieldname=['full_name'])
@@ -27,8 +31,25 @@ class IASupportTickets(Document):
 		frappe.db.set_value("IA Support Tickets",self.name,"custom_sync_status","Not Synced")
 
 
-	# def set_default_sla(self):
-	# 	sla = frappe.db.get_value("Service Level Agreement",{'document_type':'IA Support Tickets','custom_iassist_sla':1,'default_service_level_agreement':1},fieldname=['name'])
-	# 	if not sla:
-	# 		return
-	# 	self.service_level_agreement = sla
+def status_wise_activity_table(self):
+
+    if frappe.flags.get('ignore_status_activity_flag'):
+        return
+    
+    if self.is_new():
+        activity = {
+            "timestamp": now(),
+            "status": self.status,
+            "updated_by" : frappe.session.user,
+        }
+        self.append("custom_status_wise_activity_table",activity)
+    else:
+        old_doc = self.get_doc_before_save()
+        if old_doc.status != self.status:
+            activity = {
+            "timestamp": self.custom_last_sync,
+            "status": self.status,
+            "updated_by" : frappe.session.user,
+        }
+            self.append("custom_status_wise_activity_table",activity)
+
