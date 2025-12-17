@@ -17,7 +17,7 @@
   "column_break_gesv",
   "raised_by",
   "full_name",
-  "issue_type",
+  "ticket_type",
   "custom_assigned_in_icentral",
   "section_break_zehq",
   "custom_requested_to_delete_ticket",
@@ -34,7 +34,6 @@
   "subscription_status",
   "expected_start_date",
   "expected_end_date",
-  "custom_sla_status",
   "resolution_tab",
   "resolution_details",
   "column_break_qktr",
@@ -58,7 +57,15 @@
   "feedback_rating",
   "feedback",
   "feedback_extra",
-  "sla_tab"
+  "sla_tab",
+  "sla",
+  "response_by",
+  "column_break_aurm",
+  "agreement_status",
+  "resolution_by",
+  "service_level_agreement_creation",
+  "on_hold_since",
+  "total_hold_time"
  ],
  "fields": [
   {
@@ -97,10 +104,13 @@
    "read_only": 1
   },
   {
+   "default": "Open",
    "fieldname": "status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nPicked\nOn Hold\nReplied\nResolved\nResponded\nClosed"
+   "options": "IA Support Ticket Status Type"
   },
   {
    "fieldname": "column_break_gesv",
@@ -115,12 +125,6 @@
    "fieldname": "actual_end_date",
    "fieldtype": "Data",
    "label": "Actual End Date"
-  },
-  {
-   "fieldname": "issue_type",
-   "fieldtype": "Select",
-   "label": "Issue Type",
-   "options": "\nBug\nTask\nStory\nEpic\nImprovement\nIncident\nService Request"
   },
   {
    "fieldname": "custom_sync_status",
@@ -138,6 +142,8 @@
   {
    "fieldname": "central_ticket_id",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Central Ticket Id",
    "read_only": 1
   },
@@ -199,8 +205,7 @@
   {
    "fieldname": "feedback",
    "fieldtype": "Data",
-   "label": "Feedback",
-   "mandatory_depends_on": "eval:doc.status == \"Closed\";"
+   "label": "Feedback"
   },
   {
    "fieldname": "feedback_extra",
@@ -311,13 +316,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "custom_sla_status",
-   "fieldtype": "Select",
-   "label": "SLA Status",
-   "options": "\nFirst Response Due\nResolution Due\nFailed\nFulfilled\nPaused",
-   "read_only": 1
-  },
-  {
    "fieldname": "custom_payment_status",
    "fieldtype": "Data",
    "label": "Payment Status"
@@ -364,12 +362,66 @@
    "fieldname": "sla_tab",
    "fieldtype": "Tab Break",
    "label": "SLA"
+  },
+  {
+   "fieldname": "column_break_aurm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sla",
+   "fieldtype": "Data",
+   "label": "Service Level Agreement",
+   "read_only": 1
+  },
+  {
+   "fieldname": "agreement_status",
+   "fieldtype": "Data",
+   "label": "SLA Status",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.status != 'Replied' && doc.sla;",
+   "fieldname": "response_by",
+   "fieldtype": "Datetime",
+   "label": "Response By",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.status != 'Replied' && doc.sla;",
+   "fieldname": "resolution_by",
+   "fieldtype": "Datetime",
+   "label": "Resolution By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "service_level_agreement_creation",
+   "fieldtype": "Datetime",
+   "label": "SLA Creation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "on_hold_since",
+   "fieldtype": "Datetime",
+   "label": "On Hold Since",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_hold_time",
+   "fieldtype": "Duration",
+   "label": "Total Hold Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ticket_type",
+   "fieldtype": "Data",
+   "label": "Ticket Type",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-16 10:51:32.258412",
+ "modified": "2025-12-17 16:32:01.584026",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
