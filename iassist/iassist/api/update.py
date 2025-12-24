@@ -60,7 +60,8 @@ def update_ticket(data=None):
         valid_fields.pop('custom_referred_doctype')
         response_by= valid_fields.pop("response_by")
         # resolution_time = valid_fields.pop('resolution_time')
-        # valid_fields.pop("agreement_status")
+        if refer_doctype == "Issue":
+            valid_fields.pop("agreement_status")
         assigned_users = data.get("assignees_list", "not_provided")
         for key, value in valid_fields.items():
             if key != 'name':
@@ -72,8 +73,8 @@ def update_ticket(data=None):
                         setattr(doc, key, None) 
                 else:
                     setattr(doc, key, value) 
-                # if key == "resolution_time":
-                #     doc.db_set(key,value)
+        if refer_doctype=="IA Support Tickets":
+            doc.db_set('ia_priority',data.get("priority",""))
 
         # sla_field_mapping = {
         #     "sla": "custom_sla_info",

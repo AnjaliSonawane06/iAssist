@@ -170,6 +170,7 @@ def sync_to_central_support_to_create(doc):
         payload["custom_referred_doctype"] = doc.doctype
         payload["custom_sync_status"] = "Synced"
         payload["custom_last_sync"] = frappe.utils.now()
+        payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
         response = requests.post(create_url, json=payload, headers=headers)
         response_data = response.json()
 
@@ -234,6 +235,7 @@ def sync_to_central_support_to_update(doc):
         payload["custom_referred_doctype"] = doc.custom_referred_doctype
         payload["custom_sync_status"] = "Synced"
         payload["custom_last_sync"] = frappe.utils.now()
+        payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
 
         response = requests.post(update_url, json=payload, headers=headers)
         response_data = response.json()
