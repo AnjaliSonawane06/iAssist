@@ -39,7 +39,7 @@ def update_ticket(data=None):
     # refer_doctype = frappe.get_single_value("IAssist Support Configurations","doctype_for_raising_ticket")
     valid_fields = map_valid_fields(refer_doctype, data)
     docname = valid_fields.get("name")
-    custom_sla_status = data.pop("agreement_status","")
+    # custom_sla_status = data.pop("agreement_status","")
     attachments = data.pop("attachments",[])
     if not docname:
         return {
@@ -101,7 +101,7 @@ def update_ticket(data=None):
                     title=f"Status update failed for {refer_doctype} {docname}",
                     message=str(e)
                 )
-        doc.db_set("custom_sla_status",custom_sla_status)
+        # doc.db_set("custom_sla_status",custom_sla_status)
         doc.db_set("response_by",get_datetime(response_by))
         # doc.db_set("resolution_time",resolution_time)
         doc.db_set("custom_sync_status", "Synced")
