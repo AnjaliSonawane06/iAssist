@@ -48,6 +48,7 @@ def sync_comment_to_icentral(doc, method):
             frappe.db.set_value("Comment", doc.name, "custom_ic_comment_id",comment_id)
             return {"message":"commented successfully"}
         else:
+            response_data = response.json()
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
             frappe.log_error(title="Comment sync failed",message=message)
     except Exception as e:
@@ -78,7 +79,9 @@ def update_comment_in_icentral(doc,method):
         if response.status_code == 200:
             return True
         else:
-            frappe.log_error(title="Comment sync failed")
+            response_data = response.json()
+            message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+            frappe.log_error(title="Comment sync failed",message=message)
     except Exception as e:
         frappe.log_error(title="Comment sync failed",message=str(e))
 
