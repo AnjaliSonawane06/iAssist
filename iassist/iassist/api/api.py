@@ -98,34 +98,92 @@ def set_token_daily():
             for user_row in config.ics_multi_user_details:
                 data_login = {"username": user_row.username, "password": user_row.get_password("password")}
                 auth_response = requests.post(token_url, json=data_login) 
-        
-                if auth_response.status_code == 200:
-                    auth_data = auth_response.json()
-                    api_key = auth_data["message"]["api_key"]
-                    api_secret = auth_data["message"]["api_secret"]
-                    user_row.api_key = api_key
-                    user_row.api_secret= api_secret
-                else:
-                    frappe.log_error(title="Generate Token failed",message="")
-                    return{"message":"Generate Token failed"}
+
+                if auth_response.status_code != 200:
+                    frappe.log_error(
+                        "Invalid credentials while generating token",
+                        "IAssist Token"
+                    )
+
+                    return {
+                        "status": "Error",
+                        "message": "Credentials may be incorrect. Please update password and try again."
+                    }
+
+                auth_data = auth_response.json()
+                message = auth_data.get("message")
+
+                if not isinstance(message, dict):
+                    return {
+                        "status": "Error",
+                        "message": f"Authentication failed for user {user_row.username}. Please verify credentials."
+                    }
+
+                api_key = message.get("api_key")
+                api_secret = message.get("api_secret")
+
+                if not api_key or not api_secret:
+                    return {
+                        "status": "Error",
+                        "message": "Token generation Failed<br>Central server rejected credentials<br><b>Please update the password and try again."
+                    }
+
+                user_row.api_key = api_key
+                user_row.api_secret = api_secret
+                # else:
+                #     frappe.log_error(title="Generate Token failed",message="")
+                #     return{"message":"Generate Token failed"}
+            config.save()
+            return {
+            "status": "success",
+            "message": "Token generated successfully"
+        }
         else:
             data_login = {"username": config.username, "password": config.get_password("password")}
             auth_response = requests.post(token_url, json=data_login)
             auth_data = auth_response.json()
-            if auth_response.status_code == 200 :
-                api_key = auth_data["message"]["api_key"]
-                api_secret = auth_data["message"]["api_secret"]
-                config.api_key = api_key
-                config.api_secret = api_secret
-            else:
-                frappe.log_error(title="Generate Token failed",message="")
-                return{"message":"Generate Token Failed"}
-        config.save()
-        return{"message":"Token generated successfully"}
-    except Exception as e:
-        frappe.log_error(title="Generate token failed",message=str(e))
-        return str(e)
+            
+            if auth_response.status_code != 200:
+                frappe.log_error(
+                    "Invalid credentials while generating token",
+                    "IAssist Token"
+                )
+                return {
+                    "status": "error",
+                    "message": "Credentials may be incorrect. Please update password and try again."
+                }
 
+            auth_data = auth_response.json()
+            message = auth_data.get("message")
+
+            if not isinstance(message, dict):
+                return {
+                    "status": "Error",
+                    "message": "Authentication failed. Please verify credentials."
+                }
+
+            api_key = message.get("api_key")
+            api_secret = message.get("api_secret")
+
+            if not api_key or not api_secret:
+                return {
+                    "status": "Error",
+                    "message": "Token generation Failed<br>Central server rejected credentials<br><b>Please update the password and try again."
+                }
+
+            config.api_key = api_key
+            config.api_secret = api_secret
+            config.save()
+        return {
+            "status": "success",
+            "message": "Token generated successfully"
+        }    
+    except Exception as e:
+        frappe.log_error(title="Generate token failed", message=str(e))
+        return {
+            "status": "Error",
+            "message": "Unexpected error occurred. Please check Error Log."
+        }
 def get_updated_payload(doc):
     changed_fields = get_common_fields(doc)
     if doc.doctype == "Issue":
