@@ -46,6 +46,10 @@
   "opening_time",
   "resolution_date",
   "resolution_time",
+  "rca_section",
+  "custom_analysis",
+  "custom_corrective_actions",
+  "small_text_xadk",
   "payments_tab",
   "custom_functional_efforts",
   "custom_customisation_efforts",
@@ -441,12 +445,31 @@
    "fieldname": "custom_ticket_hold_reason",
    "fieldtype": "Small Text",
    "label": "Ticket Hold Reason"
+  },
+  {
+   "fieldname": "rca_section",
+   "fieldtype": "Section Break",
+   "label": "RCA"
+  },
+  {
+   "fieldname": "custom_analysis",
+   "fieldtype": "Small Text",
+   "label": "Analysis"
+  },
+  {
+   "fieldname": "custom_corrective_actions",
+   "fieldtype": "Small Text",
+   "label": "Corrective Actions"
+  },
+  {
+   "fieldname": "small_text_xadk",
+   "fieldtype": "Small Text"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-20 16:30:29.949839",
+ "modified": "2026-03-31 14:42:39.188728",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
