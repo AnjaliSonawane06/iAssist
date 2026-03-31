@@ -158,7 +158,13 @@ function set_intro_not_synced(frm){
     if (frm.doc.custom_deleted_from_icentral_support == 1) {
         messages.push("This ticket has been deleted from ICentral Support.");
     }
-    frm.set_intro(messages.join("<br>"));
+    // frm.set_intro(messages.join("<br>"));
+
+    let intro_text = messages.join("<br>");
+
+    // ONLY set intro if changed (prevents duplicate)
+    if (frm._last_intro !== intro_text) {
+        frm.set_intro(intro_text);
+        frm._last_intro = intro_text;
+    }
 }
-
-

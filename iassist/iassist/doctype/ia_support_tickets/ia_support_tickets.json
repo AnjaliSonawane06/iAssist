@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "IAT-{creation:%Y}-{#####}",
  "creation": "2025-08-13 11:42:26.614274",
  "default_view": "List",
  "doctype": "DocType",
@@ -20,6 +21,10 @@
   "ticket_type",
   "ia_priority",
   "custom_assigned_in_icentral",
+  "section_break_5a6m",
+  "not_feasible",
+  "ticket_hold_reason",
+  "section_break_k6eb",
   "section_break_zehq",
   "custom_requested_to_delete_ticket",
   "custom_deleted_from_icentral_support",
@@ -423,15 +428,34 @@
    "fieldtype": "Link",
    "label": "Priority",
    "options": "IA Priority"
+  },
+  {
+   "fieldname": "section_break_5a6m",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "not_feasible",
+   "fieldtype": "Data",
+   "label": "Not Feasible"
+  },
+  {
+   "fieldname": "ticket_hold_reason",
+   "fieldtype": "Small Text",
+   "label": "Ticket Hold Reason"
+  },
+  {
+   "fieldname": "section_break_k6eb",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-24 10:23:36.279571",
+ "modified": "2026-02-20 16:30:29.949839",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
