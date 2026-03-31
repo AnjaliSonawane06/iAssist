@@ -22,9 +22,8 @@
   "ia_priority",
   "custom_assigned_in_icentral",
   "section_break_5a6m",
-  "not_feasible",
-  "ticket_hold_reason",
-  "section_break_k6eb",
+  "custom_not_feasible",
+  "custom_ticket_hold_reason",
   "section_break_zehq",
   "custom_requested_to_delete_ticket",
   "custom_deleted_from_icentral_support",
@@ -47,6 +46,10 @@
   "opening_time",
   "resolution_date",
   "resolution_time",
+  "rca_section",
+  "custom_analysis",
+  "custom_corrective_actions",
+  "small_text_xadk",
   "payments_tab",
   "custom_functional_efforts",
   "custom_customisation_efforts",
@@ -434,24 +437,39 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "not_feasible",
+   "fieldname": "custom_not_feasible",
    "fieldtype": "Data",
    "label": "Not Feasible"
   },
   {
-   "fieldname": "ticket_hold_reason",
+   "fieldname": "custom_ticket_hold_reason",
    "fieldtype": "Small Text",
    "label": "Ticket Hold Reason"
   },
   {
-   "fieldname": "section_break_k6eb",
-   "fieldtype": "Section Break"
+   "fieldname": "rca_section",
+   "fieldtype": "Section Break",
+   "label": "RCA"
+  },
+  {
+   "fieldname": "custom_analysis",
+   "fieldtype": "Small Text",
+   "label": "Analysis"
+  },
+  {
+   "fieldname": "custom_corrective_actions",
+   "fieldtype": "Small Text",
+   "label": "Corrective Actions"
+  },
+  {
+   "fieldname": "small_text_xadk",
+   "fieldtype": "Small Text"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-20 16:30:29.949839",
+ "modified": "2026-03-31 14:42:39.188728",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",

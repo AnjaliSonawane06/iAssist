@@ -229,6 +229,10 @@ def sync_to_central_support_to_create(doc):
         payload["custom_sync_status"] = "Synced"
         payload["custom_last_sync"] = frappe.utils.now()
         payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
+        payload['custom_analysis']=doc.custom_analysis if doc.custom_analysis else "",
+        payload['custom_corrective_actions'] = doc.custom_corrective_actions if doc.custom_corrective_actions else '',
+        payload['custom_preventive_actions']=doc.custom_preventive_actions if doc.custom_preventive_actions else ''
+                    
         response = requests.post(create_url, json=payload, headers=headers)
         response_data = response.json()
 
@@ -294,6 +298,8 @@ def sync_to_central_support_to_update(doc):
         payload["custom_sync_status"] = "Synced"
         payload["custom_last_sync"] = frappe.utils.now()
         payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
+        payload["custom_not_feasible"] = doc.custom_not_feasible if doc.custom_not_feasible else ""
+        payload["custom_ticket_hold_reason"] = doc.custom_ticket_hold_reason if doc.custom_ticket_hold_reason else ""
 
         response = requests.post(update_url, json=payload, headers=headers)
         response_data = response.json()
