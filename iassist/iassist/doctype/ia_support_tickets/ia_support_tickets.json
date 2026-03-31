@@ -49,7 +49,7 @@
   "rca_section",
   "custom_analysis",
   "custom_corrective_actions",
-  "small_text_xadk",
+  "custom_preventive_actions",
   "payments_tab",
   "custom_functional_efforts",
   "custom_customisation_efforts",
@@ -462,14 +462,15 @@
    "label": "Corrective Actions"
   },
   {
-   "fieldname": "small_text_xadk",
-   "fieldtype": "Small Text"
+   "fieldname": "custom_preventive_actions",
+   "fieldtype": "Small Text",
+   "label": "Preventive Actions"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-31 14:42:39.188728",
+ "modified": "2026-03-31 15:40:35.958676",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
