@@ -22,9 +22,8 @@
   "ia_priority",
   "custom_assigned_in_icentral",
   "section_break_5a6m",
-  "not_feasible",
-  "ticket_hold_reason",
-  "section_break_k6eb",
+  "custom_not_feasible",
+  "custom_ticket_hold_reason",
   "section_break_zehq",
   "custom_requested_to_delete_ticket",
   "custom_deleted_from_icentral_support",
@@ -434,18 +433,14 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "not_feasible",
+   "fieldname": "custom_not_feasible",
    "fieldtype": "Data",
    "label": "Not Feasible"
   },
   {
-   "fieldname": "ticket_hold_reason",
+   "fieldname": "custom_ticket_hold_reason",
    "fieldtype": "Small Text",
    "label": "Ticket Hold Reason"
-  },
-  {
-   "fieldname": "section_break_k6eb",
-   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
