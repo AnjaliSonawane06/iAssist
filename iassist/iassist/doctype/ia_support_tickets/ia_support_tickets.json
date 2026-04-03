@@ -23,6 +23,7 @@
   "custom_assigned_in_icentral",
   "section_break_5a6m",
   "custom_not_feasible",
+  "custom_ticket_closure_reason",
   "custom_ticket_hold_reason",
   "section_break_zehq",
   "custom_requested_to_delete_ticket",
@@ -439,11 +440,13 @@
   {
    "fieldname": "custom_not_feasible",
    "fieldtype": "Data",
-   "label": "Not Feasible"
+   "label": "Not Feasible",
+   "read_only": 1
   },
   {
    "fieldname": "custom_ticket_hold_reason",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Ticket Hold Reason"
   },
   {
@@ -465,12 +468,18 @@
    "fieldname": "custom_preventive_actions",
    "fieldtype": "Small Text",
    "label": "Preventive Actions"
+  },
+  {
+   "fieldname": "custom_ticket_closure_reason",
+   "fieldtype": "Small Text",
+   "label": "Ticket Closure Reason",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-31 15:40:35.958676",
+ "modified": "2026-04-03 12:29:26.804380",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
