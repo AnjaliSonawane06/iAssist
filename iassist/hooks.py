@@ -161,17 +161,24 @@ doc_events = {
 	# 	"on_trash": "method"
 	# }
 }
-
+fixtures = [
+    {
+        "doctype": "Role",
+        "filters": [
+            ["role_name", "=", "IAssist User"]
+        ]
+    }
+]
 # Scheduled Tasks
 # ---------------
 
-scheduler_events = {
+# scheduler_events = {
 # 	"all": [
 # 		"iassist.tasks.all"
 # 	],
-	"daily": [
-		"iassist.iassist.api.api.set_token_daily"
-	],
+	# "daily": [
+	# 	"iassist.iassist.api.api.set_token_daily"
+	# ],
 # 	"hourly": [
 # 		"iassist.tasks.hourly"
 # 	],
@@ -181,7 +188,7 @@ scheduler_events = {
 # 	"monthly": [
 # 		"iassist.tasks.monthly"
 # 	],
-}
+# }
 
 # Testing
 # -------
