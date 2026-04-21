@@ -7,6 +7,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "status_section",
+  "status_box",
+  "section_break_sfwe",
   "project",
   "subject",
   "status",
@@ -474,12 +477,26 @@
    "fieldtype": "Small Text",
    "label": "Ticket Closure Reason",
    "read_only": 1
+  },
+  {
+   "fieldname": "status_box",
+   "fieldtype": "Small Text",
+   "label": "Status box"
+  },
+  {
+   "fieldname": "section_break_sfwe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-03 12:29:26.804380",
+ "modified": "2026-04-21 10:03:40.207258",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
