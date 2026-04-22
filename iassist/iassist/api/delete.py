@@ -33,14 +33,14 @@ def sync_delete_remark(doc):
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.msgprint("Central sync failed : User is not available in configurations")
-            frappe.log_error("Central sync failed : User is not available in configurations")
+            # frappe.log_error("Central sync failed : User is not available in configurations")
  
         base_url = config.central_support_url.rstrip("/")
         doctype = doc.doctype
         endpoint_path = get_delete_update_url(doctype)
 
         if not endpoint_path:
-            frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
+            # frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
             return
 
         delete_update_url = f"{base_url}{endpoint_path}"
@@ -78,11 +78,11 @@ def sync_delete_remark(doc):
             return {"status":"success","message":"Deletion request acknowledged successfully."}
         else:
 
-            frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
+            # frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
             return str(message)
     except Exception:
-        frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
+        # frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
         message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
         return str(message)
 
