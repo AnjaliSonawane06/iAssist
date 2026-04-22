@@ -97,10 +97,11 @@ def update_ticket(data=None):
             try:
                 doc.db_set("status", status_value)
             except Exception as e:
-                frappe.log_error(
-                    title=f"Status update failed for {refer_doctype} {docname}",
-                    message=str(e)
-                )
+                # frappe.log_error(
+                #     title=f"Status update failed for {refer_doctype} {docname}",
+                #     message=str(e)
+                # )
+                return str(e)
         # doc.db_set("custom_sla_status",custom_sla_status)
         doc.db_set("response_by",get_datetime(response_by))
         # doc.db_set("resolution_time",resolution_time)
