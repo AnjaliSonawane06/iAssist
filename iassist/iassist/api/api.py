@@ -521,3 +521,4 @@ def get_delete_update_url(doctype):
         return
     url = "/api/method/icentral_support.icentral_support.api.issue.delete_remark_update"
     return url
+
