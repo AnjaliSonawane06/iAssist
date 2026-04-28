@@ -83,7 +83,7 @@ def generate_token(data=None):
         else:
             return{"status_code":404,"message":"User does not exist"}
     except Exception as e:
-        # frappe.log_error(title="Generate Token Failed",message=str(e))
+        frappe.log_error(title="Generate Token Failed",message=str(e))
         return str(e)
     
 # def set_token_daily():
@@ -209,14 +209,14 @@ def sync_to_central_support_to_create(doc):
                     "custom_last_sync": frappe.utils.now()
             })
             frappe.msgprint("Central sync failed : User is not available in configurations")
-            # frappe.log_error("Central sync failed : User is not available in configurations")
+            frappe.log_error("Central sync failed : User is not available in configurations")
  
         base_url = config.rstrip("/")
         doctype = doc.doctype
         endpoint_path = get_create_url(doctype)
 
         if not endpoint_path:
-            # frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
+            frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
             return
 
         create_url = f"{base_url}{endpoint_path}"
@@ -261,11 +261,11 @@ def sync_to_central_support_to_create(doc):
             return {"message": "Issue raised successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            # frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
+            frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
             return str(message)
     except Exception:
-        # frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
+        frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
         message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
         return str(message)
 
@@ -281,13 +281,13 @@ def sync_to_central_support_to_update(doc):
                     "custom_last_sync": frappe.utils.now()
             })            
             frappe.msgprint("Central sync failed : User is not available in configurations")
-            # frappe.log_error("Central sync failed : User is not available in configurations")
+            frappe.log_error("Central sync failed : User is not available in configurations")
             return{"message:Central sync failed : User is not available in configurations"}
         base_url = config.rstrip("/")
         doctype = doc.doctype 
         endpoint_path = get_update_url(doctype)
         if not endpoint_path:
-            # frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
+            frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
             return{"message":f"No endpoint defined for Doctype: {doctype}"}
 
         update_url = f"{base_url}{endpoint_path}"
@@ -316,7 +316,7 @@ def sync_to_central_support_to_update(doc):
             return {"message": "Issue updated successfully", "data": doc.name}
         else:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            # frappe.log_error(f"Central sync failed [{response.status_code}]",message =response.text)
+            frappe.log_error(f"Central sync failed [{response.status_code}]",message =response.text)
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
             return str(message)
     except Exception:
@@ -412,10 +412,10 @@ def file_to_base64(file_url):
 
     except Exception as e:
        
-        # frappe.log_error(
-        #     title="Attachment Encoding Failed",
-        #     message=f"File: {file_url}, Error: {str(e)}"
-        # )
+        frappe.log_error(
+            title="Attachment Encoding Failed",
+            message=f"File: {file_url}, Error: {str(e)}"
+        )
         return str(e) or None
     
 
@@ -464,9 +464,8 @@ def get_attachments_for_payload(doc):
             })
 
         except Exception as e:
+            frappe.log_error(title=f"Error encoding file {file_info.file_name}",message=str(e))
             return str(e)
-            # frappe.log_error(title=f"Error encoding file {file_info.file_name}",message=str(e))
-
     return attachments_payload
 
 def save_attachments_for_doc(doc, attachments):
@@ -481,7 +480,7 @@ def save_attachments_for_doc(doc, attachments):
         related_to = file.get("related_to") or "attachment"
 
         if not file_name or not file_base64:
-            # frappe.log_error(f"Invalid attachment payload: {file}")
+            frappe.log_error(f"Invalid attachment payload: {file}")
             continue
 
         try:
@@ -507,10 +506,9 @@ def save_attachments_for_doc(doc, attachments):
 
                 # setattr(doc, related_to, html_value)
                 doc.db_set(related_to,html_value)
-        except Exception as e:
+        except Exception as e:  
+            frappe.log_error(title=f"Failed to save attachment {file_name}",message=str(e))
             return str(e)
-            # frappe.log_error(title=f"Failed to save attachment {file_name}",message=str(e))
-
     # if saved_files:
     #     doc.save(ignore_permissions=True) 
 
