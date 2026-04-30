@@ -197,80 +197,80 @@ def get_updated_payload(doc):
     return changed_fields
 
 def sync_to_central_support_to_create(doc):
-    try:
-        if check_if_sync_id_exists(doc):
-            return
-        config = frappe.db.get_single_value("IAssist Support Configurations","central_support_url")
-        headers={}
-        if get_configurations(doc):
-            headers = get_configurations(doc)
-        else:
-            frappe.db.set_value(doc.doctype,doc.name,{
-                    "custom_sync_status": "Not Synced",
-                    "custom_last_sync": frappe.utils.now()
+    # try:
+    if check_if_sync_id_exists(doc):
+        return
+    config = frappe.db.get_single_value("IAssist Support Configurations","central_support_url")
+    headers={}
+    if get_configurations(doc):
+        headers = get_configurations(doc)
+    else:
+        frappe.db.set_value(doc.doctype,doc.name,{
+                "custom_sync_status": "Not Synced",
+                "custom_last_sync": frappe.utils.now()
+        })
+        frappe.msgprint("Central sync failed : User is not available in configurations")
+        frappe.log_error("Central sync failed : User is not available in configurations")
+
+    base_url = config.rstrip("/")
+    doctype = doc.doctype
+    endpoint_path = get_create_url(doctype)
+
+    if not endpoint_path:
+        frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
+        return
+
+    create_url = f"{base_url}{endpoint_path}"
+
+    payload = get_doc_payload(doctype, doc)
+    payload["raised_by"] = frappe.session.user
+    payload["attachments"] = get_attachments_for_payload(doc)
+    payload["custom_url"] = frappe.utils.get_url()
+    payload["custom_referred_doctype"] = doc.doctype
+    payload["custom_sync_status"] = "Synced"
+    payload["custom_last_sync"] = frappe.utils.now()
+    payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
+    payload['custom_analysis']=doc.custom_analysis if doc.custom_analysis else ""
+    payload['custom_corrective_actions'] = doc.custom_corrective_actions if doc.custom_corrective_actions else ''
+    payload['custom_preventive_actions']= doc.custom_preventive_actions if doc.custom_preventive_actions else ''
+                
+    response = requests.post(create_url, json=payload, headers=headers)
+    response_data = response.json()
+    frappe.log_error(title="Sync Response data", message=response_data)
+    frappe.log_error(title="Request Body", message=f"""request ticket body-payload={payload}""")
+
+    if response.status_code == 401 or response.status_code == 403:
+        frappe.db.set_value(doc.doctype,doc.name,{
+                "custom_sync_status": "Not Synced",
+                "custom_last_sync": frappe.utils.now()
+        })
+        return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
+
+    if response_data.get("message", {}).get("status_code") == 200:
+        referred_doctype = response_data.get("message", {}).get("data").get("doctype")
+        frappe.db.set_value(doc.doctype, doc.name, {
+                "custom_sync_status": "Synced",
+                "custom_referred_doctype":referred_doctype,
+                "custom_last_sync": frappe.utils.now()
             })
-            frappe.msgprint("Central sync failed : User is not available in configurations")
-            frappe.log_error("Central sync failed : User is not available in configurations")
- 
-        base_url = config.rstrip("/")
-        doctype = doc.doctype
-        endpoint_path = get_create_url(doctype)
+        name = response_data.get("message", {}).get("data").get("name")
+        if doctype == "Issue":
+            frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
+        elif doctype == "HD Ticket":
+            frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
+        elif doctype == "IA Support Tickets":
+            frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
 
-        if not endpoint_path:
-            frappe.log_error(f"No endpoint defined for Doctype: {doctype}")
-            return
-
-        create_url = f"{base_url}{endpoint_path}"
-
-        payload = get_doc_payload(doctype, doc)
-        payload["raised_by"] = frappe.session.user
-        payload["attachments"] = get_attachments_for_payload(doc)
-        payload["custom_url"] = frappe.utils.get_url()
-        payload["custom_referred_doctype"] = doc.doctype
-        payload["custom_sync_status"] = "Synced"
-        payload["custom_last_sync"] = frappe.utils.now()
-        payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
-        payload['custom_analysis']=doc.custom_analysis if doc.custom_analysis else ""
-        payload['custom_corrective_actions'] = doc.custom_corrective_actions if doc.custom_corrective_actions else ''
-        payload['custom_preventive_actions']= doc.custom_preventive_actions if doc.custom_preventive_actions else ''
-                    
-        response = requests.post(create_url, json=payload, headers=headers)
-        response_data = response.json()
-        frappe.log_error(title="Sync Response data", message=response_data)
-        frappe.log_error(title="Request Body", message=f"""request ticket body-payload={payload}""")
-
-        if response.status_code == 401 or response.status_code == 403:
-            frappe.db.set_value(doc.doctype,doc.name,{
-                    "custom_sync_status": "Not Synced",
-                    "custom_last_sync": frappe.utils.now()
-            })
-            return {"message": "Authorization failed: Please verify that the user account is active and the API Key/API Secret are valid."}
-
-        if response_data.get("message", {}).get("status_code") == 200:
-            referred_doctype = response_data.get("message", {}).get("data").get("doctype")
-            frappe.db.set_value(doc.doctype, doc.name, {
-                    "custom_sync_status": "Synced",
-                    "custom_referred_doctype":referred_doctype,
-                    "custom_last_sync": frappe.utils.now()
-                })
-            name = response_data.get("message", {}).get("data").get("name")
-            if doctype == "Issue":
-                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
-            elif doctype == "HD Ticket":
-                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
-            elif doctype == "IA Support Tickets":
-                frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
-
-            return {"message": "Issue raised successfully", "data": doc.name}
-        else:
-            frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
-            frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
-            message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
-            return str(message)
-    except Exception:
-        frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
+        return {"message": "Issue raised successfully", "data": doc.name}
+    else:
+        frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
+        frappe.log_error(title=f"Central sync failed [{response.status_code}]",message=response.text)
         message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
         return str(message)
+    # except Exception:
+    #     frappe.log_error(title="Sync to central failed",message=frappe.get_traceback())
+    #     message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
+    #     return str(message)
 
     
 def sync_to_central_support_to_update(doc):
