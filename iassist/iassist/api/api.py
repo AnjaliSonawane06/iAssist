@@ -308,7 +308,7 @@ def sync_to_central_support_to_update(doc):
 
     response = requests.post(update_url, json=payload, headers=headers)
     response_data = response.json()
-    
+     
     frappe.log_error(title="Sync Response data", message=f"""response_data={response_data}, update_url={update_url}""")
     frappe.log_error(title="Request Body", message=f"""request ticket body-payload={payload}""")
 
@@ -530,4 +530,5 @@ def get_delete_update_url(doctype):
         return
     url = "/api/method/icentral_support.icentral_support.api.issue.delete_remark_update"
     return url
+
 
