@@ -199,7 +199,7 @@ def get_updated_payload(doc):
 def sync_to_central_support_to_create(doc):
     # try:
     if check_if_sync_id_exists(doc):
-        return
+        return {"message": "Already Created."}
     config = frappe.db.get_single_value("IAssist Support Configurations","central_support_url")
     headers={}
     if get_configurations(doc):
@@ -221,6 +221,7 @@ def sync_to_central_support_to_create(doc):
         return
 
     create_url = f"{base_url}{endpoint_path}"
+    frappe.log_error(title="sync_to_central_support_to_create", message=f"""frappe.utils.get_url()={frappe.utils.get_url()},config={config},  create_url={create_url}, base_url={base_url}, endpoint_path={endpoint_path}""")
 
     payload = get_doc_payload(doctype, doc)
     payload["raised_by"] = frappe.session.user
@@ -310,7 +311,7 @@ def sync_to_central_support_to_update(doc):
     response_data = response.json()
      
     frappe.log_error(title="Sync Response data", message=f"""response_data={response_data}, update_url={update_url}""")
-    frappe.log_error(title="Request Body", message=f"""request ticket body-payload={payload}""")
+    frappe.log_error(title="Request Body URL", message=f"""frappe.utils.get_url()={frappe.utils.get_url()}""")
 
     if response.status_code == 401 or response.status_code == 403:
         frappe.db.set_value(doc.doctype,doc.name,{
@@ -366,11 +367,11 @@ def get_configurations(doc):
 
 def check_if_sync_id_exists(doc):
     if doc.doctype == "Issue" and doc.custom_master_ic_id:
-        return
+        return True
     elif doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
-        return
+        return True
     elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
-        return
+        return True
 
 @frappe.whitelist()
 def sync_to_create(doctype,docname):
