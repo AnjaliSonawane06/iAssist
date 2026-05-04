@@ -16,7 +16,7 @@ def sync_comment_to_icentral(doc, method):
         config = frappe.get_single("IAssist Support Configurations")
         headers = get_configurations(doc) 
         if not headers:
-            frappe.log_error(title="Central sync failed : User not available in configurations")
+            # frappe.log_error(title="Central sync failed : User not available in configurations")
             return
 
         base_url = config.central_support_url.rstrip("/")
@@ -29,8 +29,8 @@ def sync_comment_to_icentral(doc, method):
             reference_name = frappe.db.get_value(doc.reference_doctype, doc.reference_name, "custom_master_ic_id")
         elif doc.reference_doctype == "HD Ticket":
             reference_name = frappe.db.get_value(doc.reference_doctype, doc.reference_name, "custom_master_ticket_id")
-        else:
-            frappe.log_error(title="refrence name not found")
+        # else:
+            # frappe.log_error(title="refrence name not found")
         referred_doctype = frappe.db.get_value(doc.reference_doctype, doc.reference_name, "custom_referred_doctype")
         if not reference_name and referred_doctype:
             return
@@ -50,9 +50,9 @@ def sync_comment_to_icentral(doc, method):
         else:
             response_data = response.json()
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
-            frappe.log_error(title="Comment sync failed",message=message)
+            # frappe.log_error(title="Comment sync failed",message=message)
     except Exception as e:
-        frappe.log_error(title="Comment sync failed",message=str(e))
+        # frappe.log_error(title="Comment sync failed",message=str(e))
         return str(e)
 
 def update_comment_in_icentral(doc,method):
@@ -66,7 +66,7 @@ def update_comment_in_icentral(doc,method):
         if not headers:
             frappe.db.set_value(doc.doctype,doc.name,"custom_sync_status","Not Synced")
             frappe.msgprint("Central sync failed : User is not available in configurations")
-            frappe.log_error(title="Central sync failed : User is not available in configurations")
+            # frappe.log_error(title="Central sync failed : User is not available in configurations")
 
         base_url = config.central_support_url.rstrip("/")
         doctype = doc.doctype
@@ -82,9 +82,9 @@ def update_comment_in_icentral(doc,method):
         else:
             response_data = response.json()
             message = (response_data.get("message", {}).get("message") if response_data and isinstance(response_data, dict) else response.status_code)
-            frappe.log_error(title="Comment sync failed",message=message)
+            # frappe.log_error(title="Comment sync failed",message=message)
     except Exception as e:
-        frappe.log_error(title="Comment sync failed",message=str(e))
+        # frappe.log_error(title="Comment sync failed",message=str(e))
         return str(e)
 
 @frappe.whitelist()
