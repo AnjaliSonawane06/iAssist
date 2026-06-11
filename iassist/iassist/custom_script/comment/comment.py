@@ -1,10 +1,12 @@
 import frappe
 from iassist.iassist.api.api import *
 import requests
+from frappe import _
 import json
 from frappe.core.doctype.comment.comment import Comment as FrappeComment
 from frappe.desk.notifications import notify_mentions
 from frappe.core.doctype.comment.comment import update_comment_in_doc
+from frappe.desk.doctype.notification_log.notification_log import NotificationLog, get_email_header, is_email_notifications_enabled_for_type, send_notification_email, set_notifications_as_unseen
 
 def sync_comment_to_icentral(doc, method):
     try:
@@ -213,3 +215,4 @@ class CustomComment(FrappeComment):
         super(CustomComment,self).on_update()
         doc= frappe.get_doc("Comment", self.name)
         return update_comment_in_icentral(doc,method=None)
+

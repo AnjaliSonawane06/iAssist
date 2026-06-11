@@ -10,7 +10,6 @@
   "status_section",
   "status_box",
   "section_break_sfwe",
-  "project",
   "subject",
   "status",
   "custom_last_sync",
@@ -19,11 +18,15 @@
   "central_ticket_id",
   "custom_referred_doctype",
   "column_break_gesv",
+  "ia_priority",
+  "ticket_type",
+  "custom_site_name",
   "raised_by",
   "full_name",
-  "ticket_type",
-  "ia_priority",
   "custom_assigned_in_icentral",
+  "section_break_yamu",
+  "summary",
+  "description",
   "section_break_5a6m",
   "custom_not_feasible",
   "custom_ticket_closure_reason",
@@ -32,9 +35,6 @@
   "custom_requested_to_delete_ticket",
   "custom_deleted_from_icentral_support",
   "custom_delete_remark",
-  "section_break_yamu",
-  "description",
-  "summary",
   "tab_break_eouo",
   "posting_date",
   "actual_start_date",
@@ -210,7 +210,8 @@
   {
    "fieldname": "summary",
    "fieldtype": "Text Editor",
-   "label": "Summary"
+   "label": "Summary",
+   "reqd": 1
   },
   {
    "fieldname": "tab_break_eouo",
@@ -249,11 +250,6 @@
    "label": "Rating",
    "mandatory_depends_on": "eval:doc.status == \"Closed\";",
    "no_copy": 1
-  },
-  {
-   "fieldname": "project",
-   "fieldtype": "Data",
-   "label": "Project Name"
   },
   {
    "fieldname": "section_break_zehq",
@@ -477,7 +473,8 @@
    "fieldtype": "Link",
    "label": "Priority",
    "no_copy": 1,
-   "options": "IA Priority"
+   "options": "IA Priority",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_5a6m",
@@ -541,12 +538,19 @@
    "fieldname": "status_section",
    "fieldtype": "Section Break",
    "label": "Status"
+  },
+  {
+   "description": "Enter the URL of site where the issue is occurring (e.g., UAT, Production).\n",
+   "fieldname": "custom_site_name",
+   "fieldtype": "Data",
+   "label": "Site Name",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-04 17:32:48.092978",
+ "modified": "2026-06-11 17:13:05.073607",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
@@ -569,6 +573,31 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
+ "states": [
+  {
+   "color": "Red",
+   "title": "Open"
+  },
+  {
+   "color": "Purple",
+   "title": "Replied"
+  },
+  {
+   "color": "Blue",
+   "title": "Resolved"
+  },
+  {
+   "color": "Green",
+   "title": "Closed"
+  },
+  {
+   "color": "Yellow",
+   "title": "On Hold"
+  },
+  {
+   "color": "Pink",
+   "title": "In Progress"
+  }
+ ],
  "track_changes": 1
 }

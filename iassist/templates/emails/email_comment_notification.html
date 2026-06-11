@@ -1,0 +1,15 @@
+<p>
+	<span class="text-color">{{ body_content }}</span>
+</p>
+
+{% if description %}
+<blockquote>{{ description | markdown }}</blockquote>
+{% endif %}
+
+<div class="more-info">
+	<a href="{{ doc_link2 }}"> {{ _("Open {0} Document").format(doctype) }} - </a>
+	<p>{{ _("For {0} Team").format(customer) }}</p>
+	<br /><br />
+	<a href="{{ doc_link1 }}"> {{ _("Open {0} Document").format(document_type) }} - </a>
+	<p>{{ _("For Indictrans Team") }}</p>
+</div>

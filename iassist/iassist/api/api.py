@@ -4,6 +4,7 @@ from frappe.model.meta import get_meta
 import requests
 from frappe.utils.file_manager import save_file
 import os, base64, re
+from frappe.rate_limiter import rate_limit
 
 def map_valid_fields(doctype, data):
     meta = get_meta(doctype)
@@ -302,6 +303,7 @@ def sync_to_central_support_to_update(doc):
     payload["custom_referred_doctype"] = doc.custom_referred_doctype
     payload["custom_sync_status"] = "Synced"
     payload["custom_last_sync"] = frappe.utils.now()
+    payload["custom_site_name"] = doc.custom_site_name
     payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
     payload["custom_not_feasible"] = doc.custom_not_feasible if doc.custom_not_feasible else ""
     payload["custom_ticket_hold_reason"] = doc.custom_ticket_hold_reason if doc.custom_ticket_hold_reason else ""
@@ -374,6 +376,7 @@ def check_if_sync_id_exists(doc):
         return True
 
 @frappe.whitelist()
+@rate_limit(key="docname", limit=1, seconds=30)
 def sync_to_create(doctype,docname):
     doc = frappe.get_doc(doctype,docname)
     # sync_to_central_support_to_create(doc)
@@ -533,3 +536,25 @@ def get_delete_update_url(doctype):
     return url
 
 
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_users_by_role(doctype, txt, searchfield, start, page_len, filters):
+	role = filters.get("role")
+
+	return frappe.db.sql("""
+		SELECT DISTINCT u.name, u.full_name
+		FROM `tabUser` u
+		INNER JOIN `tabHas Role` hr
+			ON hr.parent = u.name
+		WHERE
+			hr.role = %(role)s
+			AND u.enabled = 1
+			AND u.name LIKE %(txt)s
+		ORDER BY u.name
+		LIMIT %(start)s, %(page_len)s
+	""", {
+		"role": role,
+		"txt": f"%{txt}%",
+		"start": start,
+		"page_len": page_len,
+	})
