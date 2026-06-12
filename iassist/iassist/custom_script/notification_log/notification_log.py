@@ -55,10 +55,10 @@ def custom_send_notification_email(doc: NotificationLog):
         #     docname2 = frappe.db.get_value(doc.document_type, doc.document_name, "custom_master_ticket_id")
         args["doc_link1"] = get_url_to_form(doc.document_type, doc.document_name)
         doctype = frappe.db.get_value(doc.document_type, doc.document_name, "custom_referred_doctype")
-        customer = frappe.db.get_value(doc.document_type, doc.document_name, "customer")
+        # customer = frappe.db.get_value(doc.document_type, doc.document_name, "customer")
 
-        if customer :
-            args["customer"] = customer
+        # if customer :
+        #     args["customer"] = customer
         args["customer"] = "Clients"
         
         args["doctype"]= doctype
