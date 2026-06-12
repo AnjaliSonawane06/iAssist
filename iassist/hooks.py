@@ -44,7 +44,7 @@ app_license = "mit"
 
 # include js in doctype views
 doctype_js = {"Issue" : "iassist/custom_script/issue/issue.js",
-              "HD Ticket" : "iassist/custom_script/hd_ticket/hd_ticket.js"}
+              }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -145,13 +145,7 @@ doc_events = {
         "on_trash": "iassist.iassist.custom_script.issue.issue.on_trash",
         "on_update": "iassist.iassist.custom_script.issue.issue.on_update"
     },
-    "HD Ticket": {
-    #     "after_insert": "iassist.iassist.api.api.after_insert",
-        "on_update": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_update",
-        "on_trash": "iassist.iassist.custom_script.hd_ticket.hd_ticket.on_trash",
-        "validate":"iassist.iassist.custom_script.hd_ticket.hd_ticket.validate"
-        
-    },
+   
     # "Comment":{
     #     "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",
     #     "on_update" : "iassist.iassist.custom_script.comment.comment.on_update"
