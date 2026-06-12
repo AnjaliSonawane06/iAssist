@@ -43,8 +43,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Issue" : "iassist/custom_script/issue/issue.js",
-              }
+# doctype_js = {}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -139,12 +138,8 @@ override_doctype_class = {
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-   
-    "Issue": {
-        "on_trash": "iassist.iassist.custom_script.issue.issue.on_trash",
-        "on_update": "iassist.iassist.custom_script.issue.issue.on_update"
-    },
+# doc_events = {
+  
    
     # "Comment":{
     #     "after_insert": "iassist.iassist.custom_script.comment.comment.after_insert",
@@ -155,7 +150,7 @@ doc_events = {
 	# 	"on_cancel": "method",
 	# 	"on_trash": "method"
 	# }
-}
+# }
 fixtures = [
     {
         "doctype": "Role",
