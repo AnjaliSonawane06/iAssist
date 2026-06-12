@@ -43,7 +43,7 @@ def custom_send_notification_email(doc: NotificationLog):
         args["document_name"] = doc.document_name
         args["doc_link"] = get_url_to_form(doc.document_type, doc.document_name)
 
-    if doc.document_type not in ["IA Support Tickets", "Issue", "HD Ticket"]:
+    if doc.document_type not in ["IA Support Tickets"]:
         return
     else:
         docname2 = None

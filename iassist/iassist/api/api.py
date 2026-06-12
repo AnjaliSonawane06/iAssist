@@ -231,6 +231,7 @@ def sync_to_central_support_to_create(doc):
     payload["custom_referred_doctype"] = doc.doctype
     payload["custom_sync_status"] = "Synced"
     payload["custom_last_sync"] = frappe.utils.now()
+    payload["custom_site_name"] = doc.custom_site_name
     payload["priority"] = doc.ia_priority if doctype == "IA Support Tickets" else doc.priority
     payload['custom_analysis']=doc.custom_analysis if doc.custom_analysis else ""
     payload['custom_corrective_actions'] = doc.custom_corrective_actions if doc.custom_corrective_actions else ''
@@ -376,7 +377,7 @@ def check_if_sync_id_exists(doc):
         return True
 
 @frappe.whitelist()
-@rate_limit(key="docname", limit=1, seconds=30)
+@rate_limit(key="docname", limit=1, seconds=10)
 def sync_to_create(doctype,docname):
     doc = frappe.get_doc(doctype,docname)
     # sync_to_central_support_to_create(doc)
