@@ -7,7 +7,7 @@ from frappe.desk.doctype.notification_log.notification_log import NotificationLo
    
 class CustomNotificationLog(NotificationLog):
     def after_insert(self):
-        if self.document_type not in ["IA Support Tickets", "Issue", "HD Ticket"]:
+        if self.document_type not in ["IA Support Tickets"]:
             super().after_insert()
         else:
             frappe.publish_realtime("notification", after_commit=True, user=self.for_user)
