@@ -5,6 +5,7 @@ frappe.ui.form.on("IA Support Tickets", {
 	refresh: function (frm) {
 		render_status_box(frm);
 		assigned_to(frm);
+		frm.trigger("make_dashboard");
 		if (!frm.doc.__islocal) {
 			frappe.call({
 				method: "iassist.iassist.api.api.get_allowed_user",
@@ -18,7 +19,7 @@ frappe.ui.form.on("IA Support Tickets", {
 						!frm.doc.__islocal
 					) {
 						if (!frm.doc.central_ticket_id) {
-							frm.add_custom_button("Raise Ticket", function () {
+							let raiseBtn = frm.add_custom_button("Raise Ticket", function () {
 								frappe.call({
 									method: "iassist.iassist.api.api.sync_to_create",
 									args: {
@@ -42,8 +43,13 @@ frappe.ui.form.on("IA Support Tickets", {
 									},
 								});
 							});
+							$(raiseBtn).removeClass("btn-default").css({
+								"background-color": "#1E88E5",
+								"border-color": "#1E88E5",
+								color: "#ffffff",
+							});
 						} else if (!frm.doc.custom_requested_to_delete_ticket) {
-							frm.add_custom_button("Update Ticket", function () {
+							let updateBtn = frm.add_custom_button("Update Ticket", function () {
 								frappe.call({
 									method: "iassist.iassist.api.api.sync_to_update",
 									args: {
@@ -67,8 +73,13 @@ frappe.ui.form.on("IA Support Tickets", {
 									},
 								});
 							});
+							$(updateBtn).removeClass("btn-default").css({
+								"background-color": "#FB8C00",
+								"border-color": "#FB8C00",
+								color: "#ffffff",
+							});
 
-							frm.add_custom_button(
+							let deleteBtn = frm.add_custom_button(
 								"Request For Deletion",
 								function () {
 									let d = new frappe.ui.Dialog({
@@ -130,8 +141,12 @@ frappe.ui.form.on("IA Support Tickets", {
 
 									d.show();
 								},
-								"Actions",
 							);
+							$(deleteBtn).removeClass("btn-default").css({
+								"background-color": "#070707",
+								"border-color": "#151616",
+								color: "#ffffff",
+							});
 						}
 					}
 				},
@@ -161,6 +176,16 @@ frappe.ui.form.on("IA Support Tickets", {
 					}
 				};
 			});
+	},
+	make_dashboard: function (frm) {
+		$("div").remove(".form-dashboard-section.custom");
+
+		frm.dashboard.add_section(
+			frappe.render_template("ia_support_tickets_dashboard", {}),
+			__("Instructions"),
+		);
+
+		frm.dashboard.show();
 	},
 });
 

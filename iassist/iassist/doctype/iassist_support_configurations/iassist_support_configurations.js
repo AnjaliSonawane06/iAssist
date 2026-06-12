@@ -40,22 +40,42 @@ frappe.ui.form.on("IAssist Support Configurations", {
 		};
 	},
 });
+
+// function user_query(frm) {
+// 	frm.set_query("username", function () {
+// 		return {
+// 			query: "frappe.core.doctype.user.user.user_query",
+// 			filters: {
+// 				role: "IAssist User",
+// 			},
+// 		};
+// 	});
+// 	frm.fields_dict["ics_multi_user_details"].grid.get_field("username").get_query = function (
+// 		doc,
+// 		cdt,
+// 		cdn,
+// 	) {
+// 		return {
+// 			query: "frappe.core.doctype.user.user.user_query",
+// 			filters: {
+// 				role: "IAssist User",
+// 			},
+// 		};
+// 	};
+// }
 function user_query(frm) {
 	frm.set_query("username", function () {
 		return {
-			query: "frappe.core.doctype.user.user.user_query",
+			query: "iassist.iassist.api.api.get_users_by_role",
 			filters: {
 				role: "IAssist User",
 			},
 		};
 	});
-	frm.fields_dict["ics_multi_user_details"].grid.get_field("username").get_query = function (
-		doc,
-		cdt,
-		cdn,
-	) {
+
+	frm.fields_dict["ia_multi_user_details"].grid.get_field("username").get_query = function () {
 		return {
-			query: "frappe.core.doctype.user.user.user_query",
+			query: "iassist.iassist.api.api.get_users_by_role",
 			filters: {
 				role: "IAssist User",
 			},

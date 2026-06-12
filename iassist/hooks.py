@@ -131,7 +131,8 @@ doctype_js = {"Issue" : "iassist/custom_script/issue/issue.js",
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Comment": "iassist.iassist.custom_script.comment.comment.CustomComment"
+	"Comment": "iassist.iassist.custom_script.comment.comment.CustomComment",
+    "Notification Log": "iassist.iassist.custom_script.notification_log.notification_log.CustomNotificationLog"
 }
 
 # Document Events
