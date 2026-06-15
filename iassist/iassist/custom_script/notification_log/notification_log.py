@@ -1,7 +1,7 @@
 import frappe
 from iassist.iassist.api.api import *
 from frappe import _
-
+from frappe.utils.data import quoted, slug
 from frappe.desk.doctype.notification_log.notification_log import NotificationLog, get_email_header, is_email_notifications_enabled_for_type, send_notification_email, set_notifications_as_unseen
    
    
@@ -62,9 +62,9 @@ def custom_send_notification_email(doc: NotificationLog):
         args["customer"] = "Clients"
         
         args["doctype"]= doctype
+        
         if doctype and docname2:
-            args["doc_link2"] = get_url_to_form(doctype, docname2)
-
+            args["doc_link2"] = get_url_icnetral(doc, doctype, docname2)
             frappe.sendmail(
                 recipients=user.email,
                 subject=email_subject,
@@ -73,5 +73,9 @@ def custom_send_notification_email(doc: NotificationLog):
                 header=[header, "orange"],
                 now=frappe.flags.in_test,
             )
-        
-        
+
+
+def get_url_icnetral(doc, doctype, docname) -> str:
+    base_url = frappe.db.get_single_value("IAssist Support Configurations", "central_support_url")
+    url = base_url + f"/app/{quoted(slug(doctype))}/{quoted(docname)}"
+    return url
