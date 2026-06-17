@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("IA Support Tickets", {
 	refresh: function (frm) {
-		render_status_box(frm);
+		// render_status_box(frm);
 		assigned_to(frm);
 		frm.trigger("make_dashboard");
 		if (!frm.doc.__islocal) {
@@ -154,16 +154,16 @@ frappe.ui.form.on("IA Support Tickets", {
 		}
 	},
 	custom_sync_status(frm) {
-		render_status_box(frm);
+		frm.trigger("make_dashboard");
 	},
 	custom_requested_to_delete_ticket(frm) {
-		render_status_box(frm);
+		frm.trigger("make_dashboard");
 	},
 	custom_deleted_from_icentral_support(frm) {
-		render_status_box(frm);
+		frm.trigger("make_dashboard");
 	},
 	onload_post_render: function (frm) {
-		render_status_box(frm);
+		frm.trigger("make_dashboard");
 
 		frm.fields_dict &&
 			Object.keys(frm.fields_dict).forEach((fieldname) => {
@@ -177,13 +177,24 @@ frappe.ui.form.on("IA Support Tickets", {
 				};
 			});
 	},
+	// make_dashboard: function (frm) {
+	// 	$("div").remove(".form-dashboard-section.custom");
+
+	// 	frm.dashboard.add_section(
+	// 		frappe.render_template("ia_support_tickets_dashboard", {}),
+	// 		__("Instructions"),
+	// 	);
+
+	// 	frm.dashboard.show();
+	// },
+
 	make_dashboard: function (frm) {
 		$("div").remove(".form-dashboard-section.custom");
 
-		frm.dashboard.add_section(
-			frappe.render_template("ia_support_tickets_dashboard", {}),
-			__("Instructions"),
-		);
+		let instructions_html = frappe.render_template("ia_support_tickets_dashboard", {});
+		let status_html = get_status_html(frm);
+
+		frm.dashboard.add_section(instructions_html + status_html, __("Instructions"));
 
 		frm.dashboard.show();
 	},
@@ -197,36 +208,80 @@ function assigned_to(frm) {
 	}
 }
 
-function render_status_box(frm) {
-	if (!frm.fields_dict || !frm.fields_dict.status_box) return;
+// function render_status_box(frm) {
+// 	if (!frm.fields_dict || !frm.fields_dict.status_box) return;
 
+// 	let messages = [];
+
+// 	if (frm.doc.custom_sync_status === "Not Synced") {
+// 		messages.push({
+// 			text: "This ticket has not been synced yet.",
+// 		});
+// 	}
+
+// 	if (frm.doc.custom_requested_to_delete_ticket == 1) {
+// 		messages.push({
+// 			text: "A deletion request has been raised for this ticket. You can proceed to delete it.",
+// 		});
+// 	}
+
+// 	if (frm.doc.custom_deleted_from_icentral_support == 1) {
+// 		messages.push({
+// 			text: "This ticket has been deleted from ICentral Support.",
+// 		});
+// 	}
+
+// 	frm.fields_dict.status_box.$wrapper.empty();
+
+// 	if (!messages.length) return;
+
+// 	let html = `<div style="padding: 10px 10px 2px 10px;">`;
+
+// 	messages.forEach((msg) => {
+// 		html += `
+// 			<div style="
+// 				display: flex;
+// 				align-items: flex-start;
+// 				gap: 8px;
+// 				background: #e0f4ff;
+// 				border-left: 5px solid #38aae1;
+// 				padding: 10px 14px;
+// 				margin-bottom: 8px;
+// 				border-radius: 6px;
+// 				font-size: 13px;
+// 				color: #1a4f6e;
+// 				box-shadow: 0 1px 3px rgba(56,170,225,0.10);
+// 			">
+// 				<span style="font-size:15px; margin-top:1px;"></span>
+// 				<span>${msg.text}</span>
+// 			</div>
+// 		`;
+// 	});
+
+// 	html += `</div>`;
+
+// 	frm.fields_dict.status_box.$wrapper.append(html);
+// }
+
+function get_status_html(frm) {
 	let messages = [];
 
 	if (frm.doc.custom_sync_status === "Not Synced") {
-		messages.push({
-			text: "This ticket has not been synced yet.",
-		});
+		messages.push("This ticket has not been synced yet.");
 	}
-
 	if (frm.doc.custom_requested_to_delete_ticket == 1) {
-		messages.push({
-			text: "A deletion request has been raised for this ticket. You can proceed to delete it.",
-		});
+		messages.push(
+			"A deletion request has been raised for this ticket. You can proceed to delete it.",
+		);
 	}
-
 	if (frm.doc.custom_deleted_from_icentral_support == 1) {
-		messages.push({
-			text: "This ticket has been deleted from ICentral Support.",
-		});
+		messages.push("This ticket has been deleted from ICentral Support.");
 	}
 
-	frm.fields_dict.status_box.$wrapper.empty();
-
-	if (!messages.length) return;
+	if (!messages.length) return "";
 
 	let html = `<div style="padding: 10px 10px 2px 10px;">`;
-
-	messages.forEach((msg) => {
+	messages.forEach((text) => {
 		html += `
 			<div style="
 				display: flex;
@@ -242,12 +297,10 @@ function render_status_box(frm) {
 				box-shadow: 0 1px 3px rgba(56,170,225,0.10);
 			">
 				<span style="font-size:15px; margin-top:1px;"></span>
-				<span>${msg.text}</span>
+				<span>${text}</span>
 			</div>
 		`;
 	});
-
 	html += `</div>`;
-
-	frm.fields_dict.status_box.$wrapper.append(html);
+	return html;
 }

@@ -7,8 +7,6 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "status_section",
-  "status_box",
   "section_break_sfwe",
   "subject",
   "status",
@@ -525,19 +523,8 @@
    "read_only": 1
   },
   {
-   "fieldname": "status_box",
-   "fieldtype": "Small Text",
-   "label": "Status box",
-   "no_copy": 1
-  },
-  {
    "fieldname": "section_break_sfwe",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "status_section",
-   "fieldtype": "Section Break",
-   "label": "Status"
   },
   {
    "description": "Enter the URL of site where the issue is occurring (e.g., UAT, Production).\n",
@@ -550,7 +537,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-11 17:13:05.073607",
+ "modified": "2026-06-17 19:32:51.292370",
  "modified_by": "Administrator",
  "module": "IAssist",
  "name": "IA Support Tickets",
