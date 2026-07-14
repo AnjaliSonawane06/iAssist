@@ -7,9 +7,9 @@ description = "support application"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
-# Installed and managed by bench.
+
 dependencies = [
-    "frappe>=15.0.0 <16.0.0"
+   # "frappe~=15.0.0" # Installed and managed by bench.
 ]
 
 [build-system]
