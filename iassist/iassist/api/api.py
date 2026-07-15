@@ -187,11 +187,7 @@ def generate_token(data=None):
 #         }
 def get_updated_payload(doc):
     changed_fields = get_common_fields(doc)
-    if doc.doctype == "Issue":
-        changed_fields["name"] = doc.custom_master_ic_id
-    elif doc.doctype == "HD Ticket":
-        changed_fields["name"] = doc.custom_master_ticket_id
-    elif doc.doctype == "IA Support Tickets":
+    if doc.doctype == "IA Support Tickets":
         changed_fields["name"] = doc.central_ticket_id
 
     changed_fields["custom_last_sync"] = frappe.utils.now()
@@ -261,11 +257,8 @@ def sync_to_central_support_to_create(doc):
                     "custom_last_sync": frappe.utils.now()
                 })
             name = response_data.get("message", {}).get("data").get("name")
-            if doctype == "Issue":
-                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ic_id",name)
-            elif doctype == "HD Ticket":
-                frappe.db.set_value(doc.doctype,doc.name,"custom_master_ticket_id",name)
-            elif doctype == "IA Support Tickets":
+            
+            if doctype == "IA Support Tickets":
                 frappe.db.set_value(doc.doctype,doc.name,"central_ticket_id",name)
 
             return {"message": "Issue raised successfully", "data": doc.name}
@@ -375,12 +368,9 @@ def get_configurations(doc):
     return headers
 
 def check_if_sync_id_exists(doc):
-    if doc.doctype == "Issue" and doc.custom_master_ic_id:
+    if doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
         return True
-    elif doc.doctype == "IA Support Tickets" and doc.central_ticket_id:
-        return True
-    elif doc.doctype == "HD Ticket" and doc.custom_master_ticket_id:
-        return True
+    
 
 @frappe.whitelist()
 @rate_limit(key="docname", limit=1, seconds=10)
